@@ -2421,8 +2421,10 @@ static int __devinit smsc911x_drv_probe(struct platform_device *pdev)
 		pdata->ops = &shifted_smsc911x_ops;
 
 	retval = smsc911x_init(dev);
-	if (retval < 0)
+	if (retval < 0) {
+		retval = -ENODEV;
 		goto out_disable_resources;
+	}
 
 	/* configure irq polarity and type before connecting isr */
 	if (pdata->config.irq_polarity == SMSC911X_IRQ_POLARITY_ACTIVE_HIGH)
