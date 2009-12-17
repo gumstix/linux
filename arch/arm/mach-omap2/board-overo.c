@@ -447,7 +447,8 @@ static struct twl4030_platform_data overo_twldata = {
 static int __init overo_i2c_init(void)
 {
 	omap3_pmic_get_config(&overo_twldata,
-			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_AUDIO,
+			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_AUDIO |
+			TWL_COMMON_PDATA_MADC,
 			TWL_COMMON_REGULATOR_VDAC | TWL_COMMON_REGULATOR_VPLL2);
 
 	overo_twldata.vpll2->constraints.name = "VDVI";
