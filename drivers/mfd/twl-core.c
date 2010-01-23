@@ -208,6 +208,11 @@
 
 /* Few power values */
 #define R_CFG_BOOT			0x05
+#define R_GPBR1				0x0C
+
+/* MADC clock values for R_GPBR1 */
+#define MADC_HFCLK_EN			0x80
+#define DEFAULT_MADC_CLK_EN		0x10
 
 /* some fields in R_CFG_BOOT */
 #define HFCLK_FREQ_19p2_MHZ		(1 << 0)
@@ -929,6 +934,9 @@ static void clocks_init(struct device *dev,
 
 	e |= unprotect_pm_master();
 	/* effect->MADC+USB ck en */
+	if (twl_has_madc())
+		e |= twl_i2c_write_u8(TWL_MODULE_INTBR,
+				MADC_HFCLK_EN | DEFAULT_MADC_CLK_EN, R_GPBR1);
 	e |= twl_i2c_write_u8(TWL_MODULE_PM_MASTER, ctrl, R_CFG_BOOT);
 	e |= protect_pm_master();
 
