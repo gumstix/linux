@@ -177,7 +177,12 @@ int omapdss_dpi_display_enable(struct omap_dss_device *dssdev)
 
 #ifdef CONFIG_OMAP2_DSS_USE_DSI_PLL
 	dss_clk_enable(DSS_CLK_FCK2);
-	r = dsi_pll_init(dssdev, 0, 1);
+
+	if (cpu_is_omap3630())
+		r = dsi_pll_init(dssdev, 1, 1);
+	else
+		r = dsi_pll_init(dssdev, 0, 1);
+
 	if (r)
 		goto err3;
 #endif
