@@ -207,6 +207,12 @@ config TWL4030_MADC
 	  to build it as a dinamically loadable module. The module will be
 	  called twl4030-madc.ko
 
+config TWL4030_POWEROFF
+	bool "TWL4030 Allow power-off on shutdown"
+	depends on TWL4030_CORE
+	help
+	  Enables the CPU to power-off the system on shutdown
+
 config TWL6030_PWM
 	tristate "TWL6030 PWM (Pulse Width Modulator) Support"
 	depends on TWL4030_CORE
