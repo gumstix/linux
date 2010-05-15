@@ -123,6 +123,12 @@
 #define twl_has_bci()	false
 #endif
 
+#if defined (CONFIG_TWL4030_POWEROFF)
+#define twl_has_poweroff()	true
+#else
+#define twl_has_poweroff()	false
+#endif
+
 /* Triton Core internal information (BEGIN) */
 
 /* Last - for index max*/
@@ -225,6 +231,10 @@
 #define TPS_SUBSET		BIT(1)	/* tps659[23]0 have fewer LDOs */
 #define TWL5031			BIT(2)  /* twl5031 has different registers */
 #define TWL6030_CLASS		BIT(3)	/* TWL6030 class */
+
+/* for pm_power_off */
+#define PWR_P1_SW_EVENTS	0x10
+#define PWR_DEVOFF		(1 << 0)
 
 /*----------------------------------------------------------------------*/
 
@@ -1176,6 +1186,30 @@ static int twl_remove(struct i2c_client *client)
 	return 0;
 }
 
+static void twl_poweroff(void)
+{
+	int err;
+	u8 val;
+
+	err = twl_i2c_read_u8(TWL4030_MODULE_PM_MASTER, &val,
+				  PWR_P1_SW_EVENTS);
+	if (err) {
+		pr_err("%s: i2c error %d while reading TWL4030"
+			"PM_MASTER P1_SW_EVENTS\n",
+			DRIVER_NAME, err);
+		return;
+	}
+
+	val |= PWR_DEVOFF;
+
+	err = twl_i2c_write_u8(TWL4030_MODULE_PM_MASTER, val,
+				   PWR_P1_SW_EVENTS);
+	if (err)
+		pr_err("%s: i2c error %d while writing TWL4030"
+			"PM_MASTER P1_SW_EVENTS\n",
+			DRIVER_NAME, err);
+}
+
 /* NOTE:  this driver only handles a single twl4030/tps659x0 chip */
 static int __devinit
 twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
@@ -1268,6 +1302,12 @@ twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		temp &= ~(SR_I2C_SDA_CTRL_PU | SR_I2C_SCL_CTRL_PU | \
 		I2C_SDA_CTRL_PU | I2C_SCL_CTRL_PU);
 		twl_i2c_write_u8(TWL4030_MODULE_INTBR, temp, REG_GPPUPDCTR1);
+	}
+
+	if(twl_has_poweroff())
+	{
+		/* initialize pm_power_off routine */
+		pm_power_off = twl_poweroff;
 	}
 
 	status = add_children(pdata, id->driver_data);
