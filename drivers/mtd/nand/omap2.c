@@ -245,6 +245,18 @@ static void omap_read_buf_pref(struct mtd_info *mtd, u_char *buf, int len)
 	int ret = 0;
 	u32 *p = (u32 *)buf;
 
+	/* u32 align the buffer and read */
+	/* NB: This assumes the buf ptr can be aligned *down* which is a valid.
+	* Assumption when dealing with ecc buffers etc.
+	*/
+	u32 addr = (u32)p;
+
+	int diff = addr & 3;
+	addr -= diff;
+	len += diff;
+	len = (len + 3) & ~3;
+	p = (u32 *)addr;
+
 	/* take care of subpage reads */
 	if (len % 4) {
 		if (info->nand.options & NAND_BUSWIDTH_16)
