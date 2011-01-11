@@ -140,3 +140,13 @@ config SND_OMAP_SOC_IGEP0020
 	select SND_SOC_TWL4030
 	help
 	  Say Y if you want to add support for Soc audio on IGEP v2 board.
+
+config SND_OMAP_SOC_ROCKHOPPER
+	tristate "SoC Audio support for Rockhopper"
+	depends on TWL4030_CORE && SND_OMAP_SOC && (MACH_ROCKHOPPER)
+	select SND_OMAP_SOC_MCBSP
+	select SND_SOC_TWL4030
+	help
+	  Say Y if you want to add support for SoC audio on the Rockhopper
+
+

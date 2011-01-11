@@ -174,6 +174,9 @@ obj-$(CONFIG_MACH_OMAP4_PANDA)		+= board-omap4panda.o \
 
 obj-$(CONFIG_MACH_OMAP3517EVM)		+= board-am3517evm.o
 
+obj-$(CONFIG_MACH_ROCKHOPPER)		+= board-rockhopper.o \
+					   hsmmc.o
+
 obj-$(CONFIG_MACH_SBC3530)		+= board-omap3stalker.o \
 					   hsmmc.o
 # Platform specific device init code
