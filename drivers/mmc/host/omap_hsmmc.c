@@ -1405,6 +1405,7 @@ static void set_data_timeout(struct omap_hsmmc_host *host,
 	cycle_ns = 1000000000 / (clk_get_rate(host->fclk) / clkd);
 	timeout = timeout_ns / cycle_ns;
 	timeout += timeout_clks;
+	timeout *= 2;
 	if (timeout) {
 		while ((timeout & 0x80000000) == 0) {
 			dto += 1;
