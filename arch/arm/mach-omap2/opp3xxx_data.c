@@ -18,8 +18,10 @@
  * GNU General Public License for more details.
  */
 #include <linux/module.h>
+#include <linux/opp.h>
 
 #include <plat/cpu.h>
+#include <plat/omap_device.h>
 
 #include "control.h"
 #include "omap_opp_data.h"
@@ -98,6 +100,8 @@ static struct omap_opp_def __initdata omap34xx_opp_def_list[] = {
 	OPP_INITIALIZER("mpu", true, 550000000, OMAP3430_VDD_MPU_OPP4_UV),
 	/* MPU OPP5 */
 	OPP_INITIALIZER("mpu", true, 600000000, OMAP3430_VDD_MPU_OPP5_UV),
+	/* MPU OPP6 */
+	OPP_INITIALIZER("mpu", false, 720000000, 1350000),
 
 	/*
 	 * L3 OPP1 - 41.5 MHz is disabled because: The voltage for that OPP is
@@ -123,6 +127,8 @@ static struct omap_opp_def __initdata omap34xx_opp_def_list[] = {
 	OPP_INITIALIZER("iva", true, 400000000, OMAP3430_VDD_MPU_OPP4_UV),
 	/* DSP OPP5 */
 	OPP_INITIALIZER("iva", true, 430000000, OMAP3430_VDD_MPU_OPP5_UV),
+	/* DSP OPP6 */
+	OPP_INITIALIZER("iva", false, 520000000, 1350000),
 };
 
 static struct omap_opp_def __initdata omap36xx_opp_def_list[] = {
@@ -150,6 +156,57 @@ static struct omap_opp_def __initdata omap36xx_opp_def_list[] = {
 	OPP_INITIALIZER("iva", false, 800000000, OMAP3630_VDD_MPU_OPP1G_UV),
 };
 
+
+/**
+ * omap3_opp_enable_720Mhz() - Enable the OPP corresponding to 720MHz
+ *
+ * This function would be executed only if the silicon is capable of
+ * running at the 720MHz.
+ */
+static int __init omap3_opp_enable_720Mhz(void)
+{
+	int r = -ENODEV;
+	struct omap_hwmod *oh_mpu = omap_hwmod_lookup("mpu");
+	struct omap_hwmod *oh_iva;
+	struct platform_device *pdev;
+
+	if (!oh_mpu || !oh_mpu->od) {
+		goto err;
+	} else {
+		pdev = &oh_mpu->od->pdev;
+
+		r = opp_enable(&pdev->dev, 720000000);
+		if (r < 0) {
+			dev_err(&pdev->dev,
+				"opp_enable() failed for mpu@720MHz");
+			goto err;
+		}
+	}
+
+	if (omap3_has_iva()) {
+		oh_iva = omap_hwmod_lookup("iva");
+
+		if (!oh_iva || !oh_iva->od) {
+			r = -ENODEV;
+			goto err;
+		} else {
+			pdev = &oh_iva->od->pdev;
+
+			r = opp_enable(&pdev->dev, 520000000);
+			if (r < 0) {
+				dev_err(&pdev->dev,
+					"opp_enable() failed for iva@520MHz");
+				goto err;
+			}
+		}
+	}
+
+	dev_info(&pdev->dev, "Enabled OPP corresponding to 720MHz\n");
+
+err:
+	return r;
+}
+
 /**
  * omap3_opp_init() - initialize omap3 opp table
  */
@@ -163,9 +220,13 @@ int __init omap3_opp_init(void)
 	if (cpu_is_omap3630())
 		r = omap_init_opp_table(omap36xx_opp_def_list,
 			ARRAY_SIZE(omap36xx_opp_def_list));
-	else
+	else {
 		r = omap_init_opp_table(omap34xx_opp_def_list,
 			ARRAY_SIZE(omap34xx_opp_def_list));
+
+		if (omap3_has_720mhz())
+			r = omap3_opp_enable_720Mhz();
+	}
 
 	return r;
 }
