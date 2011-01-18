@@ -213,6 +213,7 @@ static void __init omap3_cpuinfo(void)
 	OMAP3_SHOW_FEATURE(neon);
 	OMAP3_SHOW_FEATURE(isp);
 	OMAP3_SHOW_FEATURE(192mhz_clk);
+	OMAP3_SHOW_FEATURE(720mhz);
 
 	printk(")\n");
 }
@@ -262,6 +263,14 @@ void __init omap3xxx_check_features(void)
 	 *       e.g. Size of L2 cache.
 	 */
 
+	/*
+	 * Does it support 720MHz?
+	 */
+	status = (OMAP3_SKUID_MASK & read_tap_reg(OMAP3_PRODID));
+
+	if (status & OMAP3_SKUID_720MHZ) {
+		omap_features |= OMAP3_HAS_720MHZ;
+	}
 	omap3_cpuinfo();
 }
 
