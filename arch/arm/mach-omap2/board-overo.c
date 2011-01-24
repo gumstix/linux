@@ -460,6 +460,18 @@ static int __init overo_i2c_init(void)
 }
 
 static struct spi_board_info overo_spi_board_info[] __initdata = {
+
+#if !defined(CONFIG_TOUCHSCREEN_ADS7846) && \
+	!defined(CONFIG_TOUCHSCREEN_ADS7846_MODULE) && \
+	(defined(CONFIG_SPI_SPIDEV) || defined(CONFIG_SPI_SPIDEV_MODULE))
+	{
+		.modalias		= "spidev",
+		.bus_num		= 1,
+		.chip_select		= 0,
+		.max_speed_hz		= 48000000,
+		.mode			= SPI_MODE_0,
+	},
+#endif
 #if defined(CONFIG_PANEL_LGPHILIPS_LB035Q02) || \
 	defined(CONFIG_PANEL_LGPHILIPS_LB035Q02_MODULE)
 	{
@@ -468,6 +480,14 @@ static struct spi_board_info overo_spi_board_info[] __initdata = {
 		.chip_select		= 1,
 		.max_speed_hz		= 500000,
 		.mode			= SPI_MODE_3,
+	},
+#elif defined(CONFIG_SPI_SPIDEV) || defined(CONFIG_SPI_SPIDEV_MODULE)
+	{
+		.modalias		= "spidev",
+		.bus_num		= 1,
+		.chip_select		= 1,
+		.max_speed_hz		= 48000000,
+		.mode			= SPI_MODE_0,
 	},
 #endif
 };
