@@ -84,6 +84,13 @@
 #define twl_has_madc()	false
 #endif
 
+#if defined(CONFIG_SENSORS_TWL4030_MADC) ||\
+	 defined(CONFIG_SENSORS_TWL4030_MADC_MODULE)
+#define twl_has_madc_hwmon()  true
+#else
+#define twl_has_madc_hwmon()  false
+#endif
+
 #ifdef CONFIG_TWL4030_POWER
 #define twl_has_power()        true
 #else
@@ -675,6 +682,14 @@ add_children(struct twl4030_platform_data *pdata, unsigned long features)
 	if (twl_has_madc() && pdata->madc) {
 		child = add_child(2, "twl4030_madc",
 				pdata->madc, sizeof(*pdata->madc),
+				true, pdata->irq_base + MADC_INTR_OFFSET, 0);
+		if (IS_ERR(child))
+			return PTR_ERR(child);
+	}
+
+if (twl_has_madc_hwmon()) {
+		child = add_child(2, "twl4030_madc_hwmon",
+				NULL, 0,
 				true, pdata->irq_base + MADC_INTR_OFFSET, 0);
 		if (IS_ERR(child))
 			return PTR_ERR(child);
