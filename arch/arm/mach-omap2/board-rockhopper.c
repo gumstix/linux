@@ -20,6 +20,7 @@
 #include <linux/gpio.h>
 #include <linux/input.h>
 #include <linux/gpio_keys.h>
+#include <linux/spi/spi.h>
 
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
@@ -38,6 +39,7 @@
 #include <plat/common.h>
 #include <plat/display.h>
 #include <plat/gpmc.h>
+#include <plat/mcspi.h>
 #include <plat/nand.h>
 #include <plat/usb.h>
 #include <plat/timer-gp.h>
@@ -317,6 +319,23 @@ static int __init rockhopper_i2c_init(void)
 	return 0;
 }
 
+static struct spi_board_info rockhopper_spi_board_info[] __initdata = {
+	{
+		.modalias		= "spidev",
+		.bus_num		= 2,
+		.chip_select		= 0,
+		.max_speed_hz		= 48000000,
+		.mode			= SPI_MODE_0,
+	},
+};
+
+static int __init rockhopper_spi_init(void)
+{
+	spi_register_board_info(rockhopper_spi_board_info,
+			ARRAY_SIZE(rockhopper_spi_board_info));
+	return 0;
+}
+
 static struct gpio_led gpio_leds[] = {
 	{
 		.name			= "rockhopperboard:green:com",
@@ -447,6 +466,7 @@ static void __init rockhopper_init(void)
 {
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBB);
 	rockhopper_i2c_init();
+	rockhopper_spi_init();
 	platform_add_devices(rockhopper_devices,
 			ARRAY_SIZE(rockhopper_devices));
 	omap_serial_init();
