@@ -211,6 +211,7 @@ static void __init overo_init_smsc911x(void)
 static inline void __init overo_init_smsc911x(void) { return; }
 #endif
 
+#if defined(CONFIG_PANEL_DVI) || defined(CONFIG_PANEL_DVI_MODULE)
 /* DSS */
 static int lcd_enabled;
 static int dvi_enabled;
@@ -332,6 +333,7 @@ static struct omap_dss_board_info overo_dss_data = {
 	.devices	= overo_dss_devices,
 	.default_device	= &overo_dvi_device,
 };
+#endif
 
 static struct mtd_partition overo_nand_partitions[] = {
 	{
@@ -513,10 +515,29 @@ static struct twl4030_platform_data overo_twldata = {
 
 static int __init overo_i2c_init(void)
 {
-	omap3_pmic_get_config(&overo_twldata,
-			TWL_COMMON_PDATA_USB | TWL_COMMON_PDATA_AUDIO |
-			TWL_COMMON_PDATA_MADC,
-			TWL_COMMON_REGULATOR_VDAC | TWL_COMMON_REGULATOR_VPLL2);
+	u32 pdata_flags = 0;
+	u32 regulators_flags = 0;
+
+#if defined(CONFIG_USB_MUSB_HDRC) || \
+	defined (CONFIG_USB_MUSB_HDRC_MODULE)
+	pdata_flags |= TWL_COMMON_PDATA_USB;
+#endif
+#if defined(CONFIG_MFD_TWL4030_AUDIO) || \
+	defined (CONFIG_MFD_TWL4030_AUDIO_MODULE)
+	pdata_flags |= TWL_COMMON_PDATA_AUDIO;
+#endif
+#if defined(CONFIG_TWL4030_MADC) || \
+	defined (CONFIG_TWL4030_MADC_MODULE)
+	pdata_flags |= TWL_COMMON_PDATA_MADC;
+#endif
+
+#if defined(CONFIG_OMAP2_DSS) || defined(CONFIG_OMAP2_DSS_MODULE)
+	regulators_flags |= TWL_COMMON_REGULATOR_VDAC;
+	regulators_flags |= TWL_COMMON_REGULATOR_VPLL2;
+#endif
+
+	omap3_pmic_get_config(&overo_twldata, pdata_flags,
+			      regulators_flags);
 
 	overo_twldata.vpll2->constraints.name = "VDVI";
 
@@ -567,6 +588,8 @@ static int __init overo_spi_init(void)
 	return 0;
 }
 
+#if defined(CONFIG_USB_EHCI_HCD_OMAP) || \
+	defined (CONFIG_USB_EHCI_HCD_OMAP_MODULE)
 static const struct usbhs_omap_board_data usbhs_bdata __initconst = {
 	.port_mode[0] = OMAP_USBHS_PORT_MODE_UNUSED,
 	.port_mode[1] = OMAP_EHCI_PORT_MODE_PHY,
@@ -576,6 +599,14 @@ static const struct usbhs_omap_board_data usbhs_bdata __initconst = {
 	.reset_gpio_port[1]  = OVERO_GPIO_USBH_NRESET,
 	.reset_gpio_port[2]  = -EINVAL
 };
+
+static inline void __init overo_init_usbhs(void)
+{
+	usbhs_init(&usbhs_bdata);
+}
+#else
+static inline void __init overo_init_usbhs(void) { return; }
+#endif
 
 #ifdef CONFIG_OMAP_MUX
 static struct omap_board_mux board_mux[] __initdata = {
@@ -636,23 +667,35 @@ static void __init overo_opp_init(void)
 	return;
 }
 
+#if defined(CONFIG_USB_MUSB_HDRC) || \
+	defined (CONFIG_USB_MUSB_HDRC_MODULE)
+static inline void __init overo_init_musb(void)
+{
+	usb_musb_init(NULL);
+}
+#else
+static inline void __init overo_init_musb(void) { return; }
+#endif
+
 static void __init overo_init(void)
 {
 	int ret;
 
 	omap3_mux_init(board_mux, OMAP_PACKAGE_CBB);
 	overo_i2c_init();
+#if defined(CONFIG_PANEL_GENERIC_DPI) || defined(CONFIG_PANEL_GENERIC_DPI_MODULE)
 	omap_display_init(&overo_dss_data);
+	overo_display_init();
+#endif
 	omap_serial_init();
 	omap_sdrc_init(mt46h32m32lf6_sdrc_params,
 				  mt46h32m32lf6_sdrc_params);
 	omap_nand_flash_init(0, overo_nand_partitions,
 			     ARRAY_SIZE(overo_nand_partitions));
-	usb_musb_init(NULL);
-	usbhs_init(&usbhs_bdata);
+	overo_init_musb();
+	overo_init_usbhs();
 	overo_spi_init();
 	overo_init_smsc911x();
-	overo_display_init();
 	overo_init_led();
 	overo_init_keys();
 	overo_opp_init();
