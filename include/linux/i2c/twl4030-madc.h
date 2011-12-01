@@ -120,6 +120,9 @@ enum sample_type {
 #define CURR_PSR_R1		44
 #define CURR_PSR_R2		88
 
+#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
+#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
+
 #define TWL4030_BCI_BCICTL1	0x23
 #define TWL4030_BCI_CGAIN	0x020
 #define TWL4030_BCI_MESBAT	(1 << 1)
