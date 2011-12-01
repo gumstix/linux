@@ -725,6 +725,23 @@ static int __devinit twl4030_madc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_current_generator;
 
+	/* Enable ADCIN3 through 6 */
+	ret = twl_i2c_read_u8(TWL4030_MODULE_USB,
+			      &regval, TWL4030_USB_CARKIT_ANA_CTRL);
+	if (ret) {
+		dev_err(&pdev->dev, "unable to read reg CARKIT_ANA_CTRL 0x%X\n",
+			TWL4030_USB_CARKIT_ANA_CTRL);
+		goto err_i2c;
+	}
+	regval |= TWL4030_USB_SEL_MADC_MCPC;
+	ret = twl_i2c_write_u8(TWL4030_MODULE_USB,
+			       regval, TWL4030_USB_CARKIT_ANA_CTRL);
+	if (ret) {
+		dev_err(&pdev->dev, "unable to write reg CARKIT_ANA_CTRL 0x%X\n",
+			TWL4030_USB_CARKIT_ANA_CTRL);
+		goto err_i2c;
+	}
+
 	ret = twl_i2c_read_u8(TWL4030_MODULE_MAIN_CHARGE,
 			      &regval, TWL4030_BCI_BCICTL1);
 	if (ret) {
