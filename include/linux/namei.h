@@ -84,8 +84,11 @@ extern int vfs_path_lookup(struct dentry *, struct vfsmount *,
 
 extern struct file *lookup_instantiate_filp(struct nameidata *nd, struct dentry *dentry,
 		int (*open)(struct inode *, struct file *));
+extern void release_open_intent(struct nameidata *);
 
 extern struct dentry *lookup_one_len(const char *, struct dentry *, int);
+extern struct dentry *lookup_one_len_nd(const char *, struct dentry *, int,
+				      struct nameidata *nd);
 
 extern int follow_down_one(struct path *);
 extern int follow_down(struct path *);
