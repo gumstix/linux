@@ -420,15 +420,9 @@ static struct platform_device keys_gpio = {
 	},
 };
 
-static struct platform_device madc_hwmon = {
-	.name	= "twl4030_madc_hwmon",
-	.id	= -1,
-};
-
 static struct platform_device *omap3_beagle_devices[] __initdata = {
 	&leds_gpio,
 	&keys_gpio,
-	&madc_hwmon,
 };
 
 static const struct usbhs_omap_board_data usbhs_bdata __initconst = {
