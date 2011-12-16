@@ -3343,12 +3343,16 @@ static __initdata struct omap_hwmod *omap36xx_hwmods[] = {
 	&omap36xx_sr2_hwmod,
 	&omap3xxx_usbhsotg_hwmod,
 	&omap3xxx_mailbox_hwmod,
+	&omap3xxx_es3plus_mmc1_hwmod,
+	&omap3xxx_es3plus_mmc2_hwmod,
 	NULL
 };
 
 static __initdata struct omap_hwmod *am35xx_hwmods[] = {
 	&omap3xxx_dss_core_hwmod, /* XXX ??? */
 	&am35xx_usbhsotg_hwmod,
+	&omap3xxx_es3plus_mmc1_hwmod,
+	&omap3xxx_es3plus_mmc2_hwmod,
 	NULL
 };
 
