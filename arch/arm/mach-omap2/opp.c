@@ -62,6 +62,10 @@ int __init omap_init_opp_table(struct omap_opp_def *opp_def,
 				__func__, i);
 			return -EINVAL;
 		}
+
+		if ((strcmp(opp_def->hwmod_name,"iva") == 0) && !omap3_has_iva())
+			continue;
+
 		oh = omap_hwmod_lookup(opp_def->hwmod_name);
 		if (!oh || !oh->od) {
 			pr_warn("%s: no hwmod or odev for %s, [%d] "
