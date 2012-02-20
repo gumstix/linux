@@ -944,7 +944,7 @@ static struct clk dpll5_ck = {
 	.parent		= &sys_ck,
 	.dpll_data	= &dpll5_dd,
 	.round_rate	= &omap2_dpll_round_rate,
-	.set_rate	= &omap3_noncore_dpll_set_rate,
+	.set_rate	= &omap3_dpll5_set_rate,
 	.clkdm_name	= "dpll5_clkdm",
 	.recalc		= &omap3_dpll_recalc,
 };

@@ -461,6 +461,21 @@ int omap2_clksel_set_rate(struct clk *clk, unsigned long rate)
 	return 0;
 }
 
+int omap2_clksel_force_divisor(struct clk *clk, int new_div)
+{
+	u32 field_val;
+
+	field_val = _divisor_to_clksel(clk, new_div);
+	if (field_val == ~0)
+		return -EINVAL;
+
+	_write_clksel_reg(clk, field_val);
+
+	clk->rate = clk->parent->rate / new_div;
+
+	return 0;
+}
+
 /*
  * Clksel parent setting function - not passed in struct clk function
  * pointer - instead, the OMAP clock code currently assumes that any

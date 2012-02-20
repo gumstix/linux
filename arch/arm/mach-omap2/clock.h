@@ -61,6 +61,12 @@ void omap3_dpll_allow_idle(struct clk *clk);
 void omap3_dpll_deny_idle(struct clk *clk);
 u32 omap3_dpll_autoidle_read(struct clk *clk);
 int omap3_noncore_dpll_set_rate(struct clk *clk, unsigned long rate);
+#if CONFIG_ARCH_OMAP3
+int omap3_noncore_dpll_program(struct clk *clk, u16 m, u8 n, u16 freqsel);
+/* If you are using this function and not on OMAP3, you are
+ * Doing It Wrong(tm), so there is no stub.
+ */
+#endif
 int omap3_noncore_dpll_enable(struct clk *clk);
 void omap3_noncore_dpll_disable(struct clk *clk);
 int omap4_dpllmx_gatectrl_read(struct clk *clk);
@@ -86,6 +92,7 @@ unsigned long omap2_clksel_recalc(struct clk *clk);
 long omap2_clksel_round_rate(struct clk *clk, unsigned long target_rate);
 int omap2_clksel_set_rate(struct clk *clk, unsigned long rate);
 int omap2_clksel_set_parent(struct clk *clk, struct clk *new_parent);
+int omap2_clksel_force_divisor(struct clk *clk, int new_div);
 
 /* clkt_iclk.c public functions */
 extern void omap2_clkt_iclk_allow_idle(struct clk *clk);
