@@ -516,7 +516,7 @@ static struct twl4030_platform_data overo_twldata = {
 static int __init overo_i2c_init(void)
 {
 	u32 pdata_flags = 0;
-	u32 regulators_flags = 0;
+	u32 regulators_flags = TWL_COMMON_REGULATOR_VPLL2;
 
 #if defined(CONFIG_USB_MUSB_HDRC) || \
 	defined (CONFIG_USB_MUSB_HDRC_MODULE)
@@ -533,7 +533,6 @@ static int __init overo_i2c_init(void)
 
 #if defined(CONFIG_OMAP2_DSS) || defined(CONFIG_OMAP2_DSS_MODULE)
 	regulators_flags |= TWL_COMMON_REGULATOR_VDAC;
-	regulators_flags |= TWL_COMMON_REGULATOR_VPLL2;
 #endif
 
 	omap3_pmic_get_config(&overo_twldata, pdata_flags,
