@@ -173,7 +173,7 @@ static int __init omap3_opp_enable_720Mhz(void)
 	if (!oh_mpu || !oh_mpu->od) {
 		goto err;
 	} else {
-		pdev = &oh_mpu->od->pdev;
+		pdev = oh_mpu->od->pdev;
 
 		r = opp_enable(&pdev->dev, 720000000);
 		if (r < 0) {
@@ -190,7 +190,7 @@ static int __init omap3_opp_enable_720Mhz(void)
 			r = -ENODEV;
 			goto err;
 		} else {
-			pdev = &oh_iva->od->pdev;
+			pdev = oh_iva->od->pdev;
 
 			r = opp_enable(&pdev->dev, 520000000);
 			if (r < 0) {
