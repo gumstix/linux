@@ -687,8 +687,7 @@ static void __init overo_init(void)
 	overo_display_init();
 #endif
 	omap_serial_init();
-	omap_sdrc_init(mt46h32m32lf6_sdrc_params,
-				  mt46h32m32lf6_sdrc_params);
+	omap_sdrc_init(NULL, NULL);
 	omap_nand_flash_init(0, overo_nand_partitions,
 			     ARRAY_SIZE(overo_nand_partitions));
 	overo_init_musb();
