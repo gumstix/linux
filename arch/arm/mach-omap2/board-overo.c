@@ -89,9 +89,18 @@ static void mt9v032_set_clock(struct v4l2_subdev *subdev, unsigned int rate)
 	isp->platform_cb.set_xclk(isp, rate, ISP_XCLK_A);
 }
 
+static const s64 mt9v032_link_freqs[] = {
+	13000000,
+	26600000,
+	27000000,
+	0,
+};
+
 static struct mt9v032_platform_data mt9v032_platform_data = {
 	.clk_pol = 0,
 	.set_clock = mt9v032_set_clock,
+	.link_freqs = mt9v032_link_freqs,
+	.link_def_freq = 26600000,
 };
 
 static struct i2c_board_info mt9v032_i2c_device = {
