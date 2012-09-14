@@ -678,6 +678,41 @@ isp_video_get_format(struct file *file, void *fh, struct v4l2_format *format)
 }
 
 static int
+isp_video_enum_format(struct file *file, void *fh, struct v4l2_fmtdesc *fmtdesc)
+{
+	struct isp_video_fh *vfh = to_isp_video_fh(fh);
+	struct isp_video *video = video_drvdata(file);
+
+	if (fmtdesc->index)
+	{
+		printk(KERN_ERR "%s: invalid index (%d)\n", 
+							__func__, 
+							fmtdesc->index);
+		return -EINVAL;
+	}
+
+	if (fmtdesc->type != video->type)
+	{
+		printk(KERN_ERR "%s: invalid type (%d). Current type: %d\n",
+							__func__,
+							fmtdesc->type,
+							video->type);
+		return -EINVAL;
+	}
+
+	/* Ugly hack */
+	fmtdesc->flags = 0;
+	fmtdesc->description[0] = 'U';
+	fmtdesc->description[1] = 'Y';
+	fmtdesc->description[2] = 'V';
+	fmtdesc->description[3] = 'Y';
+	fmtdesc->description[4] = '0';
+	fmtdesc->pixelformat = V4L2_PIX_FMT_UYVY;
+
+	return 0;
+}
+
+static int
 isp_video_set_format(struct file *file, void *fh, struct v4l2_format *format)
 {
 	struct isp_video_fh *vfh = to_isp_video_fh(fh);
@@ -1189,8 +1224,20 @@ isp_video_s_input(struct file *file, void *fh, unsigned int input)
 	return input == 0 ? 0 : -EINVAL;
 }
 
+static int
+isp_video_queryctrl(struct file *file, void *fh, 
+				struct v4l2_queryctrl *queryctrl)
+{
+	if (queryctrl->id < V4L2_CID_BASE) {
+		return -EDOM;
+	}
+
+	return -EINVAL;
+}
+
 static const struct v4l2_ioctl_ops isp_video_ioctl_ops = {
 	.vidioc_querycap		= isp_video_querycap,
+	.vidioc_enum_fmt_vid_cap	= isp_video_enum_format,
 	.vidioc_g_fmt_vid_cap		= isp_video_get_format,
 	.vidioc_s_fmt_vid_cap		= isp_video_set_format,
 	.vidioc_try_fmt_vid_cap		= isp_video_try_format,
@@ -1211,6 +1258,7 @@ static const struct v4l2_ioctl_ops isp_video_ioctl_ops = {
 	.vidioc_enum_input		= isp_video_enum_input,
 	.vidioc_g_input			= isp_video_g_input,
 	.vidioc_s_input			= isp_video_s_input,
+	.vidioc_queryctrl		= isp_video_queryctrl,
 };
 
 /* -----------------------------------------------------------------------------
