@@ -48,6 +48,7 @@
 #include "common.h"
 #include "control.h"
 #include "hsmmc.h"
+#include "mux.h"
 #include "common-board-devices.h"
 
 #define HDMI_GPIO_LS_OE		41
@@ -332,6 +333,9 @@ static struct platform_device *duovero_devices[] __initdata = {
 
 static void __init duovero_init(void)
 {
+	int package = OMAP_PACKAGE_CBS;
+
+	omap4_mux_init(NULL, NULL, package);
 	duovero_i2c_init();
 	platform_add_devices(duovero_devices, ARRAY_SIZE(duovero_devices));
 	omap_serial_init();
