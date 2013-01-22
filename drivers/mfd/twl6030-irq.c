@@ -31,6 +31,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  */
 
+#include <asm/mach-types.h>
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/interrupt.h>
@@ -343,6 +344,11 @@ int twl6030_mmc_card_detect(struct device *dev, int slot)
 						TWL6030_MMCCTRL);
 	if (ret >= 0)
 		ret = read_reg & STS_MMC;
+
+	/* on duovero cd sense is inverted */
+	if (machine_is_duovero())
+		ret = (ret == 0) ? 1 : 0;
+
 	return ret;
 }
 EXPORT_SYMBOL(twl6030_mmc_card_detect);
