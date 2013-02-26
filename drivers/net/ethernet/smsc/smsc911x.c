@@ -528,10 +528,8 @@ static int smsc911x_mii_read(struct mii_bus *bus, int phyaddr, int regidx)
 	spin_lock_irqsave(&pdata->mac_lock, flags);
 
 	/* Confirm MII not busy */
-	if (unlikely(smsc911x_mac_read(pdata, MII_ACC) & MII_ACC_MII_BUSY_)) {
+	while (unlikely(smsc911x_mac_read(pdata, MII_ACC) & MII_ACC_MII_BUSY_)) {
 		SMSC_WARN(pdata, hw, "MII is busy in smsc911x_mii_read???");
-		reg = -EIO;
-		goto out;
 	}
 
 	/* Set the address, index & direction (read from PHY) */
