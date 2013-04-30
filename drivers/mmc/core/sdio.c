@@ -1053,11 +1053,13 @@ int mmc_attach_sdio(struct mmc_host *host)
 	BUG_ON(!host);
 	WARN_ON(!host->claimed);
 
+        printk(KERN_ERR "OCR: %x\n", ocr);
 	err = mmc_send_io_op_cond(host, 0, &ocr);
 	if (err)
 		return err;
 
 	mmc_attach_bus(host, &mmc_sdio_ops);
+        printk(KERN_ERR "host->ocr_avail_sdio: %x\n", host->ocr_avail_sdio);
 	if (host->ocr_avail_sdio)
 		host->ocr_avail = host->ocr_avail_sdio;
 
@@ -1073,6 +1075,7 @@ int mmc_attach_sdio(struct mmc_host *host)
 	}
 
 	host->ocr = mmc_select_voltage(host, ocr);
+        printk("Host: %x\tOCR: %x\n", host->ocr, ocr);
 
 	/*
 	 * Can we support the voltage(s) of the card(s)?
