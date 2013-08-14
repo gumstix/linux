@@ -52,12 +52,12 @@ static int omap3_dpll5_apply_erratum21(struct clk *clk, struct clk *dpll5_m2)
 	int i, rv;
 	static const struct dpll_settings precomputed[] = {
 		/* From DM3730 errata (sprz319e), table 36
-		* +1 is because the values in the table are register values;
-		* dpll_program() will subtract one from what we give it,
+		* N+1 is because the values in the table are register values;
+		* dpll_program() will subtract one from the N we give it,
 		* so ...
 		*/
-		{ 13000000, 443+1, 5+1, 8 },
-		{ 26000000, 443+1, 11+1, 8 }
+		{ 13000000, 443, 5+1, 8 },
+		{ 26000000, 443, 11+1, 8 }
 	};
 
 	sys_clk = clk_get(NULL, "sys_ck");
