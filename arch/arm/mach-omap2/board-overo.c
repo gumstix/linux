@@ -370,11 +370,11 @@ static struct mtd_partition overo_nand_partitions[] = {
 	{
 		.name           = "linux",
 		.offset         = MTDPART_OFS_APPEND,	/* Offset = 0x280000 */
-		.size           = 32 * NAND_BLOCK_SIZE,
+		.size           = 64 * NAND_BLOCK_SIZE,
 	},
 	{
 		.name           = "rootfs",
-		.offset         = MTDPART_OFS_APPEND,	/* Offset = 0x680000 */
+		.offset         = MTDPART_OFS_APPEND,	/* Offset = 0xa80000 */
 		.size           = MTDPART_SIZ_FULL,
 	},
 };
