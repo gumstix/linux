@@ -241,6 +241,11 @@
 #define PWR_P1_SW_EVENTS	0x10
 #define PWR_DEVOFF		(1 << 0)
 
+#define TWL6030_PHOENIX_DEV_ON	0x25
+#define TWL6030_APP_DEVOFF	(1<<0)
+#define TWL6030_CON_DEVOFF	(1<<1)
+#define TWL6030_MOD_DEVOFF	(1<<2)
+
 /*----------------------------------------------------------------------*/
 
 /* is driver active, bound to a chip? */
@@ -1239,7 +1244,7 @@ static int twl_remove(struct i2c_client *client)
 	return 0;
 }
 
-static void twl_poweroff(void)
+static void twl_4030_poweroff(void)
 {
 	int err;
 	u8 val;
@@ -1261,6 +1266,36 @@ static void twl_poweroff(void)
 		pr_err("%s: i2c error %d while writing TWL4030"
 			"PM_MASTER P1_SW_EVENTS\n",
 			DRIVER_NAME, err);
+}
+
+static void twl_6030_poweroff(void)
+{
+	int err;
+	u8 val;
+
+	err = twl_i2c_read_u8(TWL6030_MODULE_ID0, &val,
+	                      TWL6030_PHOENIX_DEV_ON);
+	if (err) {
+		pr_err("%s: i2c error %d while reading TWL6030"
+		       "MODULE_ID0 PHOENIX_DEV_ON\n",
+		       DRIVER_NAME, err);
+		return;
+	}
+
+	val |= TWL6030_APP_DEVOFF;
+	val |= TWL6030_CON_DEVOFF;
+	val |= TWL6030_MOD_DEVOFF;
+
+	err = twl_i2c_write_u8(TWL6030_MODULE_ID0, val,
+	                       TWL6030_PHOENIX_DEV_ON);
+
+	if (err) {
+		pr_err("%s: i2c error %d while writing TWL6030"
+		       "MODULE_ID0 PHOENIX_DEV_ON\n",
+		       DRIVER_NAME, err);
+	}
+
+	return;
 }
 
 /* NOTE: This driver only handles a single twl4030/tps659x0 chip */
@@ -1373,10 +1408,13 @@ twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		twl_i2c_write_u8(TWL4030_MODULE_INTBR, temp, REG_GPPUPDCTR1);
 	}
 
-	if(twl_has_poweroff())
+	if (twl_has_poweroff())
 	{
 		/* initialize pm_power_off routine */
-		pm_power_off = twl_poweroff;
+		if (twl_class_is_6030())
+			pm_power_off = twl_6030_poweroff;
+		else
+			pm_power_off = twl_4030_poweroff;
 	}
 
 	status = -ENODEV;

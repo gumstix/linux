@@ -299,10 +299,10 @@ config MFD_TWL4030_AUDIO
 	default n
 
 config TWL4030_POWEROFF
-	bool "TWL4030 Allow power-off on shutdown"
+	bool "TWL4030/TWL6030 Allow power-off on shutdown"
 	depends on TWL4030_CORE
 	help
-	  Enables the CPU to power-off the system on shutdown
+	  Enables the CPU to power-off the system on shutdown.
 
 config TWL6030_PWM
 	tristate "TWL6030 PWM (Pulse Width Modulator) Support"
