@@ -235,6 +235,7 @@ static void titsc_read_coordinates(struct titsc *ts_dev,
 			prev_val_x = read;
 
 		} else if (channel < creads * 2) {
+			read = 0xe93 - read + 0xc8;
 			diff = abs(read - prev_val_y);
 			if (diff < prev_diff_y) {
 				prev_diff_y = diff;
