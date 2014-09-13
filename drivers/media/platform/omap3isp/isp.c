@@ -327,8 +327,8 @@ static int isp_xclk_init(struct isp_device *isp)
 		if (np)
 			continue;
 
-		if (pdata->xclks[i].con_id == NULL &&
-		    pdata->xclks[i].dev_id == NULL)
+		if (!pdata || (pdata->xclks[i].con_id == NULL &&
+			       pdata->xclks[i].dev_id == NULL))
 			continue;
 
 		xclk->lookup = kzalloc(sizeof(*xclk->lookup), GFP_KERNEL);
