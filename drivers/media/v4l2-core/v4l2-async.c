@@ -104,10 +104,16 @@ static int v4l2_async_test_notify(struct v4l2_async_notifier *notifier,
 	sd->asd = asd;
 	sd->notifier = notifier;
 
+	ret = v4l2_device_register_subdev(notifier->v4l2_dev, sd);
+	if (ret < 0)
+		return ret;
+
 	if (notifier->bound) {
 		ret = notifier->bound(notifier, sd, asd);
-		if (ret < 0)
+		if (ret < 0) {
 			return ret;
+			v4l2_device_unregister_subdev(sd);
+		}
 	}
 	/* Move from the global subdevice list to notifier's done */
 	list_move(&sd->async_list, &notifier->done);
