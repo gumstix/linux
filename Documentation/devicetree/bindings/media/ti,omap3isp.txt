@@ -1,0 +1,43 @@
+omap3isp Device Tree bindings
+=============================
+
+The values below are for 3630. Other models of OMAP 3 may have a more
+limited set of valid values.
+
+Required properties
+===================
+
+compatible	: "ti,omap3-isp"
+reg		: a set of register block physical addresses and
+		  lengths.
+interrupts	: the interrupt number.
+iommus		: phandle of the IOMMU.
+#clock-cells	: 1 --- the ISP has two external clocks.
+
+Port nodes (optional)
+---------------------
+
+reg		: The interface:
+		  0 - parallel (CCDC)
+		  1 - CSI2A / PHY2
+		  2 - CCP2B / PHY1
+		  3 - CCP2B / PHY2
+		  4 - CSI2C / PHY1
+
+Endpoint nodes
+--------------
+
+data-lanes	: an array of data lanes from 1 to 3. The length can
+		  be either 1 or 2.
+clock-lanes	: the clock lane (from 1 to 3).
+
+Optional properties
+===================
+
+vdd-csiphy1-supply : voltage supply of the CSI-2 PHY 1
+vdd-csiphy2-supply : voltage supply of the CSI-2 PHY 2
+
+Endpoint nodes
+--------------
+
+lane-polarity	: lane polarity (CSI-2 only)

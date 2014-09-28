@@ -6728,6 +6728,7 @@ L:	linux-media@vger.kernel.org
 S:	Maintained
 F:	drivers/media/platform/omap3isp/
 F:	drivers/staging/media/omap4iss/
+F:	Documentation/devicetree/bindings/media/ti,omap3isp.txt
 
 OMAP USB SUPPORT
 M:	Felipe Balbi <balbi@ti.com>
