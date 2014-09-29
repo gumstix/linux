@@ -23,7 +23,6 @@ static void v4l2_of_parse_csi_bus(const struct device_node *node,
 				  struct v4l2_of_endpoint *endpoint)
 {
 	struct v4l2_of_bus_mipi_csi2 *bus = &endpoint->bus.mipi_csi2;
-	u32 data_lanes[ARRAY_SIZE(bus->data_lanes)];
 	struct property *prop;
 	bool have_clk_lane = false;
 	unsigned int flags = 0;
@@ -34,14 +33,26 @@ static void v4l2_of_parse_csi_bus(const struct device_node *node,
 		const __be32 *lane = NULL;
 		int i;
 
-		for (i = 0; i < ARRAY_SIZE(data_lanes); i++) {
-			lane = of_prop_next_u32(prop, lane, &data_lanes[i]);
+		for (i = 0; i < ARRAY_SIZE(bus->data_lanes); i++) {
+			lane = of_prop_next_u32(prop, lane, &v);
 			if (!lane)
 				break;
+			bus->data_lanes[i] = v;
 		}
 		bus->num_data_lanes = i;
-		while (i--)
-			bus->data_lanes[i] = data_lanes[i];
+	}
+
+	prop = of_find_property(node, "lane-polarity", NULL);
+	if (prop) {
+		const __be32 *polarity = NULL;
+		int i;
+
+		for (i = 0; i < ARRAY_SIZE(bus->lane_polarity); i++) {
+			polarity = of_prop_next_u32(prop, polarity, &v);
+			if (!polarity)
+				break;
+			bus->lane_polarity[i] = v;
+		}
 	}
 
 	if (!of_property_read_u32(node, "clock-lanes", &v)) {
