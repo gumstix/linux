@@ -1,0 +1,43 @@
+/*
+ * Copyright (C) 2014 Gumstix, Inc. - https://www.gumstix.com/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/*
+ * 4.3'' LCD Capacitive panel output for some Gumstix Overo boards (Arbor43C)
+ * https://store.gumstix.com/index.php/products/635/
+ */
+
+#include "omap3-overo-common-lcd43.dtsi"
+
+&omap3_pmx_core {
+		ft5x0_pins: pinmux_ft5x0_pins {
+		pinctrl-single,pins = <
+			OMAP3_CORE1_IOPAD(0x2138, PIN_INPUT_PULLDOWN | MUX_MODE4)	/* csi2_dx1.gpio_114 */
+		>;
+	};
+};
+
+&ads7846reg {
+	status = "disabled";
+};
+
+&i2c3 {
+		pinctrl-names = "default";
+		pinctrl-0 = "&i2c3_pins";
+		clock-frequency = <100000>;
+		status = "okay";
+
+		ft5x0x: ft5x0@38 {
+			compatible = "focaltech,ft5x0x";
+			reg = <0x38>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&ft5x0_pins>;
+			interrupt-parent = <&gpio1>;
+			interrupts = <10 0>; /* gpio_10 */
+			wake-gpios = <&gpio1 31 0>;	/* gpio_31 */
+		};
+	};
