@@ -40,6 +40,13 @@
 			OMAP3_CORE1_IOPAD(0x21a0, PIN_OUTPUT | MUX_MODE0)	/* uart3_tx_irtx.uart3_tx_irtx */
 		>;
 	};
+
+	ft5306_pins: pinmux_ft5306_pins {
+		pinctrl-single,pins = <
+			OMAP3_WKUP_IOPAD(0x2a1a, PIN_INPUT | MUX_MODE4)		/* sys_clkout1.gpio_10 */
+			OMAP3_WKUP_IOPAD(0x2a26, PIN_INPUT | MUX_MODE4)		/* jtag_emu1.gpio_31 */
+		>;
+	};
 };
 
 &i2c3 {
@@ -80,6 +87,19 @@
 		st,max-limit-x = <550>;
 		st,max-limit-y = <550>;
 		st,max-limit-z = <750>;
+	};
+
+	captouch: edt-ft5306@38 {
+		compatible = "edt,edt-ft5306", "edt,edt-ft5x06";
+		pinctrl-names = "default";
+		pinctrl-0 = <&ft5306_pins>;
+
+		reg = <0x38>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <10 0>;
+		wake-gpios = <&gpio1 31 GPIO_ACTIVE_LOW>;
+		touchscreen-size-x = <480>;
+		touchscreen-size-y = <272>;
 	};
 
 	/* optional Caspa (MT9V032) camera */

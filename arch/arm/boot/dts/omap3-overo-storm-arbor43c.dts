@@ -1,0 +1,39 @@
+/*
+ * Copyright (C) 2014 Gumstix, Inc. - https://www.gumstix.com/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/*
+ * Arbor43C expansion board is manufactured by Gumstix Inc.
+ * https://store.gumstix.com/index.php/products/635/
+ */
+
+/dts-v1/;
+
+#include "omap3-overo-storm.dtsi"
+#include "omap3-overo-arbor43c-common.dtsi"
+
+/ {
+	model = "OMAP36xx/AM37xx/DM37xx Gumstix Overo on Arbor43C";
+	compatible = "gumstix,omap3-overo-arbor43c", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
+};
+
+&omap3_pmx_core2 {
+	led_pins: pinmux_led_pins {
+		pinctrl-single,pins = <
+			OMAP3630_CORE2_IOPAD(0x21E0, PIN_OUTPUT | MUX_MODE4)	/* sys_nirq.gpio_186 */
+			OMAP3630_CORE2_IOPAD(0x2198, PIN_OUTPUT | MUX_MODE4)	/* mcbsp1_clkx.gpio_168 */
+			OMAP3630_CORE2_IOPAD(0x2180, PIN_OUTPUT | MUX_MODE4)	/* uart1_cts.gpio_150 */
+		>;
+	};
+
+	button_pins: pinmux_button_pins {
+		pinctrl-single,pins = <
+			OMAP3630_CORE2_IOPAD(0x25dc, PIN_INPUT | MUX_MODE4)		/* csi2_dx1.gpio114 */
+		>;
+	};
+};
+
