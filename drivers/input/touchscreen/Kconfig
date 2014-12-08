@@ -239,6 +239,15 @@ config TOUCHSCREEN_DYNAPRO
 	  To compile this driver as a module, choose M here: the
 	  module will be called dynapro.
 
+config TOUCHSCREEN_NEWHAVEN_FT5X0X
+	tristate "Newhaven FT5x0x I2C Touchscreen support"
+	depends on I2C
+	help
+	   Say Y here if you have a Newhaven Capacitive touchscreen using
+	    a FT5x0x touch controllers. Note: not compatible with EDT
+	    "Polytouch" controllers.
+
+
 config TOUCHSCREEN_HAMPSHIRE
 	tristate "Hampshire serial touchscreen"
 	select SERIO

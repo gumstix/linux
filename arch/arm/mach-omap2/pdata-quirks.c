@@ -7,6 +7,7 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+
 #include <linux/clk.h>
 #include <linux/davinci_emac.h>
 #include <linux/gpio.h>
@@ -14,6 +15,7 @@
 #include <linux/kernel.h>
 #include <linux/of_platform.h>
 #include <linux/wl12xx.h>
+#include <linux/input/ft5x06_ts.h>
 
 #include <linux/platform_data/pinctrl-single.h>
 #include <linux/platform_data/iommu-omap.h>
@@ -63,6 +65,39 @@ static inline void legacy_init_wl12xx(unsigned ref_clock,
 }
 #endif
 
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_NEWHAVEN_FT5X0X)
+/* Capacitive Touchscreen */
+static struct ft5x0x_platform_data overo_captouch_info = {
+	.irq_gpio       = 10,
+	.wake_gpio      = 31,
+};
+
+static struct i2c_board_info overo_i2c2_boardinfo[] = {
+	{
+		I2C_BOARD_INFO("ft5x0x_ts", 0x38),
+		.platform_data  = &overo_captouch_info,
+	},
+};
+
+static void __init __used legacy_init_ft5x0x(unsigned int irq_gpio,
+					     unsigned int wake_gpio)
+{
+	int ret;
+
+	overo_i2c2_boardinfo[0].irq = gpio_to_irq(10);
+	ret = omap_register_i2c_bus(3, 100, overo_i2c2_boardinfo,
+				    ARRAY_SIZE(overo_i2c2_boardinfo));
+
+	pr_info("FT5X0X configured\n");
+}
+#else
+static void __init __used legacy_init_ft5x0x(unsigned int irq_gpio,
+					     unsigned int wake_gpio)
+{
+	pr_err("FT5X0X not configured\n");
+}
+#endif
+
 #ifdef CONFIG_MACH_NOKIA_N8X0
 static void __init omap2420_n8x0_legacy_init(void)
 {
@@ -73,6 +108,11 @@ static void __init omap2420_n8x0_legacy_init(void)
 #endif
 
 #ifdef CONFIG_ARCH_OMAP3
+static void __init gumstix_arbor43c_legacy_init(void)
+{
+	legacy_init_ft5x0x(10, 31);
+}
+
 static void __init hsmmc2_internal_input_clk(void)
 {
 	u32 reg;
@@ -377,6 +417,7 @@ static struct pdata_init pdata_quirks[] __initdata = {
 	{ "ti,omap3-evm-37xx", omap3_evm_legacy_init, },
 	{ "ti,omap3-zoom3", omap3_zoom_legacy_init, },
 	{ "ti,am3517-evm", am3517_evm_legacy_init, },
+	{ "gumstix,omap3-overo-arbor43c", gumstix_arbor43c_legacy_init, },
 #endif
 #ifdef CONFIG_ARCH_OMAP4
 	{ "ti,omap4-sdp", omap4_sdp_legacy_init, },
