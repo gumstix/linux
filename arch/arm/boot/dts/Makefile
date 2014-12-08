@@ -440,11 +440,13 @@ dtb-$(CONFIG_ARCH_OMAP3) += \
 	omap3-n9.dtb \
 	omap3-n950.dtb \
 	omap3-overo-alto35.dtb \
+	omap3-overo-arbor43c.dtb \
 	omap3-overo-chestnut43.dtb \
 	omap3-overo-gallop43.dtb \
 	omap3-overo-palo35.dtb \
 	omap3-overo-palo43.dtb \
 	omap3-overo-storm-alto35.dtb \
+	omap3-overo-storm-arbor43c.dtb \
 	omap3-overo-storm-chestnut43.dtb \
 	omap3-overo-storm-gallop43.dtb \
 	omap3-overo-storm-palo35.dtb \
