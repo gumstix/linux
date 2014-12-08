@@ -421,7 +421,6 @@ static struct pdata_init pdata_quirks[] __initdata = {
 	{ "ti,am3517-evm", am3517_evm_legacy_init, },
 	{ "technexion,omap3-tao3530", omap3_tao3530_legacy_init, },
 	{ "gumstix,omap3-overo", overo_legacy_init, },
-	{ "gumstix,omap3-overo-arbor43c", gumstix_arbor43c_legacy_init, },
 #endif
 #ifdef CONFIG_ARCH_OMAP4
 	{ "ti,omap4-sdp", omap4_sdp_legacy_init, },

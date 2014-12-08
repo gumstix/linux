@@ -1119,6 +1119,9 @@ static SIMPLE_DEV_PM_OPS(edt_ft5x06_ts_pm_ops,
 
 static const struct i2c_device_id edt_ft5x06_ts_id[] = {
 	{ "edt-ft5x06", 0, },
+	{ "edt-ft5206", 0, },
+	{ "edt-ft5306", 0, },
+	{ "edt-ft5406", 0, },
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(i2c, edt_ft5x06_ts_id);

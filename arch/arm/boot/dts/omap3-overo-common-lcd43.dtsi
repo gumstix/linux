@@ -133,6 +133,7 @@
 		regulator-name = "ads7846-reg";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+		status = "okay";
 	};
 
 	backlight {

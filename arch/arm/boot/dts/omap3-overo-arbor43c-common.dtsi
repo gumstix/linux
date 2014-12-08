@@ -1,0 +1,69 @@
+/*
+ * Copyright (C) 2014 Gumstix, Inc. - https://www.gumstix.com/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/*
+ * Arbor43C expansion board is manufactured by Gumstix Inc.
+ * https://store.gumstix.com/index.php/products/635/
+ */
+
+#include "omap3-overo-common-peripherals.dtsi"
+#include "omap3-overo-common-lcd43c.dtsi"
+
+#include <dt-bindings/input/input.h>
+
+/ {
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_pins>;
+		heartbeat {
+			label = "overo:red:gpio163";
+			gpios = <&gpio6 3 GPIO_ACTIVE_HIGH>;		/* gpio_163 */
+			/* linux,default-trigger = "heartbeat"; */
+		};
+		gpio150 {
+			label = "overo:blue:gpio150";
+			gpios = <&gpio5 22 GPIO_ACTIVE_HIGH>;		/* gpio_150 */
+		};
+		gpio186 {
+			label = "overo:yellow:gpio186";
+			gpios = <&gpio6 26 GPIO_ACTIVE_HIGH>; 	/* gpio_186 */
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&button_pins>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		button1@114 {
+			label = "button1";
+			linux,code = <BTN_1>;
+			gpios = <&gpio4 18 GPIO_ACTIVE_LOW>;		/* gpio_114 */
+			gpio-key,wakeup;
+		};
+	};
+};
+
+#include "omap-gpmc-smsc9221.dtsi"
+
+&gpmc {
+	ranges = <5 0 0x2c000000 0x1000000>;	/* CS5 */
+
+	ethernet@gpmc {
+		reg = <5 0 0xff>;
+		interrupt-parent = <&gpio6>;
+		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;	/* GPIO 176 */
+	};
+};
+
+&lis33de {
+	status = "disabled";
+};
+
