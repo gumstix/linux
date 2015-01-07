@@ -26,7 +26,7 @@
 
 #define OMAP24XX_DMA_NO_DEVICE		0
 
-#define HIST_CONFIG_DMA	1
+#define HIST_CONFIG_DMA	0
 
 #define HIST_USING_DMA(hist) ((hist)->dma_ch >= 0)
 

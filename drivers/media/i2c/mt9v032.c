@@ -22,6 +22,9 @@
 #include <linux/videodev2.h>
 #include <linux/v4l2-mediabus.h>
 #include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_gpio.h>
+#include <linux/of_graph.h>
 
 #include <media/mt9v032.h>
 #include <media/v4l2-ctrls.h>
@@ -870,14 +873,52 @@ static const struct regmap_config mt9v032_regmap_config = {
 /* -----------------------------------------------------------------------------
  * Driver initialization and probing
  */
+static const s64 mt9v032_link_freqs[] = {
+	13000000,
+	26600000,
+	27000000,
+	0,
+};
+
+static struct mt9v032_platform_data *
+mt9v032_get_pdata(struct i2c_client *client)
+{
+	struct mt9v032_platform_data *pdata;
+	struct device_node *np;
+
+	if (!IS_ENABLED(CONFIG_OF) || !client->dev.of_node)
+		return client->dev.platform_data;
+
+	np = of_graph_get_next_endpoint(client->dev.of_node, NULL);
+	if (!np)
+		return NULL;
+
+	pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		goto done;
+
+	//of_property_read_u32(np, "clk-pol", &pdata->clk_pol);
+	pdata->clk_pol = 0;
+	pdata->link_freqs = mt9v032_link_freqs;
+	pdata->link_def_freq = 26600000;
+
+done:
+	of_node_put(np);
+	return pdata;
+}
 
 static int mt9v032_probe(struct i2c_client *client,
 		const struct i2c_device_id *did)
 {
-	struct mt9v032_platform_data *pdata = client->dev.platform_data;
+	struct mt9v032_platform_data *pdata = mt9v032_get_pdata(client);
 	struct mt9v032 *mt9v032;
 	unsigned int i;
 	int ret;
+
+	if (!pdata) {
+		dev_err(&client->dev, "No platform data\n");
+		return -EINVAL;
+	}
 
 	if (!i2c_check_functionality(client->adapter,
 				     I2C_FUNC_SMBUS_WORD_DATA)) {
@@ -1030,8 +1071,24 @@ static const struct i2c_device_id mt9v032_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, mt9v032_id);
 
+#if IS_ENABLED(CONFIG_OF)
+static const struct of_device_id mt9v032_of_match[] = {
+	{ .compatible = "aptina,mt9v022", },
+	{ .compatible = "aptina,mt9v022m", },
+	{ .compatible = "aptina,mt9v022", },
+	{ .compatible = "aptina,mt9v022m", },
+	{ .compatible = "aptina,mt9v032", },
+	{ .compatible = "aptina,mt9v032m", },
+	{ .compatible = "aptina,mt9v034", },
+	{ .compatible = "aptina,mt9v034m", },
+	{ /* sentinel */ },
+};
+MODULE_DEVICE_TABLE(of, mt9v032_of_match);
+#endif
+
 static struct i2c_driver mt9v032_driver = {
 	.driver = {
+		.of_match_table = of_match_ptr(mt9v032_of_match),
 		.name = "mt9v032",
 	},
 	.probe		= mt9v032_probe,

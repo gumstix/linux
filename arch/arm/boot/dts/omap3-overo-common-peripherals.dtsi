@@ -81,7 +81,39 @@
 		st,max-limit-y = <550>;
 		st,max-limit-z = <750>;
 	};
+
+	/* optional Caspa (MT9V032) camera */
+	mt9v032_1: camera@5c {
+		compatible = "aptina,mt9v032";
+		reg = <0x5c>;
+		clocks = <&omap3_isp 0>;
+		clock-names = "cam_xclka";
+		clock-frequency = <26600000>;
+		port {
+			mt9v032_1_1: endpoint {
+				remote-endpoint = <&ccdc_ep>;
+				clk-pol = <0>;
+				link-frequencies = /bits/ 64 <13000000 26600000 27000000>;
+			};
+		};
+	};
 };
+
+&omap3_isp {
+	vdd-csiphy1-supply = <&vaux2>;
+	vdd-csiphy2-supply = <&vaux2>;
+	ports {
+		port@0 {
+			reg = <0>;
+			ccdc_ep: endpoint {
+				remote-endpoint = <&mt9v032_1_1>;
+				bus-width = <12>;
+				data-shift = <0>;
+			};
+		};
+	};
+};
+
 
 &mmc3 {
 	status = "disabled";
