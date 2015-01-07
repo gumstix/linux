@@ -311,10 +311,12 @@ dtb-$(CONFIG_ARCH_OMAP3) += am3517-craneboard.dtb \
 	omap3-overo-alto35.dtb \
 	omap3-overo-chestnut43.dtb \
 	omap3-overo-gallop43.dtb \
+	omap3-overo-palo35.dtb \
 	omap3-overo-palo43.dtb \
 	omap3-overo-storm-alto35.dtb \
 	omap3-overo-storm-chestnut43.dtb \
 	omap3-overo-storm-gallop43.dtb \
+	omap3-overo-storm-palo35.dtb \
 	omap3-overo-storm-palo43.dtb \
 	omap3-overo-storm-summit.dtb \
 	omap3-overo-storm-tobi.dtb \
