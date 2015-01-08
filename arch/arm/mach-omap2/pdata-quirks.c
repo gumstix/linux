@@ -193,6 +193,11 @@ static void __init omap3_zoom_legacy_init(void)
 	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 162);
 }
 
+static void __init overo_legacy_init(void)
+{
+	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 58);
+}
+
 static void am35xx_enable_emac_int(void)
 {
 	u32 v;
@@ -417,6 +422,7 @@ static struct pdata_init pdata_quirks[] __initdata = {
 	{ "ti,omap3-evm-37xx", omap3_evm_legacy_init, },
 	{ "ti,omap3-zoom3", omap3_zoom_legacy_init, },
 	{ "ti,am3517-evm", am3517_evm_legacy_init, },
+	{ "gumstix,omap3-overo", overo_legacy_init, },
 	{ "gumstix,omap3-overo-arbor43c", gumstix_arbor43c_legacy_init, },
 #endif
 #ifdef CONFIG_ARCH_OMAP4
