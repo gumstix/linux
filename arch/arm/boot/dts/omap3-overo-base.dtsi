@@ -222,3 +222,7 @@
 	pinctrl-0 = <&uart2_pins>;
 };
 
+&mcbsp2 {
+    status = "okay";
+};
+
