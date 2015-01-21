@@ -77,7 +77,6 @@
 		regulator-name = "regulator-w3cbw003c-bt-nreset";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;		/* gpio_164: BT nReset */
 		startup-delay-us = <10000>;
 	};
 };

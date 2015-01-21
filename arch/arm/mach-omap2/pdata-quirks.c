@@ -16,6 +16,7 @@
 #include <linux/of_platform.h>
 #include <linux/wl12xx.h>
 #include <linux/input/ft5x06_ts.h>
+#include <linux/ti_wilink_st.h>
 
 #include <linux/platform_data/pinctrl-single.h>
 #include <linux/platform_data/iommu-omap.h>
@@ -193,8 +194,27 @@ static void __init omap3_zoom_legacy_init(void)
 	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 162);
 }
 
+
+struct ti_st_plat_data wilink_pdata = {
+	.nshutdown_gpio = 164,
+	.dev_name = "/dev/ttyO1",
+	.flow_cntrl = 1,
+	.baud_rate = 115200,
+};
+static struct platform_device wl128x_device = {
+	.name		= "kim",
+	.id		= -1,
+	.dev.platform_data = &wilink_pdata,
+};
+static struct platform_device btwilink_device = {
+	.name = "btwilink",
+	.id = -1,
+};
+
 static void __init overo_legacy_init(void)
 {
+	platform_device_register(&btwilink_device);
+	platform_device_register(&wl128x_device);
 	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 58);
 }
 
