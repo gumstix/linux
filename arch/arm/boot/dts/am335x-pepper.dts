@@ -408,6 +408,7 @@
 
 &v3v3c_reg {
 	regulator-name = "v3v3c_reg";
+	regulator-boot-on;
 	regulator-min-microvolt = <3300000>;
 	regulator-max-microvolt = <3300000>;
 	vin-supply = <&vbat>;
@@ -432,6 +433,7 @@
 	regulators {
 		dcdc1_reg: regulator@0 {
 			/* VDD_1V8 system supply */
+			regulator-name = "vdds_dpr";
 			regulator-always-on;
 		};
 
@@ -470,6 +472,8 @@
 			regulator-name = "vdd_3v3a";
 			regulator-min-microvolt = <3300000>;
 			regulator-max-microvolt = <3300000>;
+			regulator-boot-on;
+			regulator-always-on;
 		};
 
 		ldo4_reg: regulator@6 {
