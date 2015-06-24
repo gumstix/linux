@@ -342,6 +342,8 @@ dtb-$(CONFIG_SOC_AM33XX) += am335x-base0033.dtb \
 	am335x-evmsk.dtb \
 	am335x-nano.dtb \
 	am335x-pepper.dtb \
+	am335x-pepper-43r.dtb \
+	am335x-pepper-43c.dtb \
 	am335x-pepper-dvi.dtb
 dtb-$(CONFIG_ARCH_OMAP4) += omap4-duovero-parlor.dtb \
 	omap4-panda.dtb \

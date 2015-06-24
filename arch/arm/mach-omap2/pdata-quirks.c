@@ -316,6 +316,31 @@ static void __init am335x_evmsk_legacy_init(void)
 {
 	legacy_init_wl12xx(WL12XX_REFCLOCK_38, 0, 31);
 }
+
+struct ti_st_plat_data pepper_wilink_pdata = {
+        .nshutdown_gpio = 32,
+        .dev_name = "/dev/ttyO1",
+        .flow_cntrl = 1,
+        .baud_rate = 3000000,
+};
+
+static struct platform_device pepper_wl18xx_device = {
+        .name           = "kim",
+        .id             = -1,
+        .dev.platform_data = &pepper_wilink_pdata,
+};
+
+static struct platform_device pepper_btwilink_device = {
+        .name = "btwilink",
+        .id = -1,
+};
+
+static void __init am335x_pepper_legacy_init(void)
+{
+	platform_device_register(&pepper_btwilink_device);
+	platform_device_register(&pepper_wl18xx_device);
+	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 33);
+}
 #endif
 
 #ifdef CONFIG_SOC_OMAP5
@@ -430,6 +455,8 @@ static struct pdata_init pdata_quirks[] __initdata = {
 #endif
 #ifdef CONFIG_SOC_AM33XX
 	{ "ti,am335x-evmsk", am335x_evmsk_legacy_init, },
+	{ "gumstix,am335x-pepper-43r", am335x_pepper_legacy_init, },
+	{ "gumstix,am335x-pepper-43c", am335x_pepper_legacy_init, },
 #endif
 #ifdef CONFIG_SOC_OMAP5
 	{ "ti,omap5-uevm", omap5_uevm_legacy_init, },
