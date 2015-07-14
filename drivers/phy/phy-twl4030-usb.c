@@ -144,6 +144,9 @@
 #define PMBR1				0x0D
 #define GPIO_USB_4PIN_ULPI_2430C	(3 << 0)
 
+#define TWL4030_USB_SEL_MADC_MCPC	(1<<3)
+#define TWL4030_USB_CARKIT_ANA_CTRL	0xBB
+
 /*
  * If VBUS is valid or ID is ground, then we know a
  * cable is present and we need to be runtime-enabled
@@ -400,7 +403,6 @@ static int twl4030_usb_runtime_suspend(struct device *dev)
 	__twl4030_phy_power(twl, 0);
 	regulator_disable(twl->usb1v5);
 	regulator_disable(twl->usb1v8);
-	regulator_disable(twl->usb3v1);
 
 	return 0;
 }
@@ -464,6 +466,11 @@ static int twl4030_phy_power_on(struct phy *phy)
 	if (twl->usb_mode == T2_USB_MODE_ULPI)
 		twl4030_i2c_access(twl, 0);
 	schedule_delayed_work(&twl->id_workaround_work, 0);
+
+	twl4030_usb_write(twl, TWL4030_USB_CARKIT_ANA_CTRL,
+		twl4030_usb_read(twl, TWL4030_USB_CARKIT_ANA_CTRL) |
+		TWL4030_USB_SEL_MADC_MCPC);
+
 
 	return 0;
 }
