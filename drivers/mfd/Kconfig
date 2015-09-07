@@ -1083,6 +1083,12 @@ config TWL4030_POWER
 	  and load scripts controlling which resources are switched off/on
 	  or reset when a sleep, wakeup or warm reset event occurs.
 
+config TWL4030_POWEROFF
+	bool "TWL4030 Allow power-off on shutdown"
+	depends on TWL4030_CORE
+	help
+	  Enables the CPU to power-off the system on shutdown
+
 config MFD_TWL4030_AUDIO
 	bool "TI TWL4030 Audio"
 	depends on TWL4030_CORE

@@ -67,6 +67,12 @@
 
 #define DRIVER_NAME			"twl"
 
+#if defined (CONFIG_TWL4030_POWEROFF)
+#define twl_has_poweroff() true
+#else
+#define twl_has_poweroff() false
+#endif
+
 /* Triton Core internal information (BEGIN) */
 
 /* Base Address defns for twl4030_map[] */
@@ -105,6 +111,10 @@
 
 #define TWL4030_BASEADD_RTC		0x001C
 #define TWL4030_BASEADD_SECURED_REG	0x0000
+
+/* for pm_power_off */
+#define PWR_P1_SW_EVENTS 		0x10
+#define PWR_DEVOFF	 		(1 << 0)
 
 /* Triton Core internal information (END) */
 
@@ -1075,6 +1085,31 @@ static int twl_remove(struct i2c_client *client)
 	return 0;
 }
 
+static void twl_poweroff(void)
+{
+	int err;
+	u8 val;
+
+	err = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &val,
+				  PWR_P1_SW_EVENTS);
+	if (err) {
+		pr_err("%s: i2c error %d while reading TWL4030"
+			"PM_MASTER P1_SW_EVENTS\n",
+			DRIVER_NAME, err);
+		return;
+	}
+
+	val |= PWR_DEVOFF;
+
+	err = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, val,
+				   PWR_P1_SW_EVENTS);
+	if (err)
+		pr_err("%s: i2c error %d while writing TWL4030"
+			"PM_MASTER P1_SW_EVENTS\n",
+			DRIVER_NAME, err);
+}
+
+
 static struct of_dev_auxdata twl_auxdata_lookup[] = {
 	OF_DEV_AUXDATA("ti,twl4030-gpio", 0, "twl4030-gpio", NULL),
 	{ /* sentinel */ },
@@ -1227,6 +1262,12 @@ twl_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		temp |= SMARTREFLEX_ENABLE;
 		twl_i2c_write_u8(TWL_MODULE_PM_RECEIVER, temp,
 				 TWL4030_DCDC_GLOBAL_CFG);
+	}
+
+	if(twl_has_poweroff())
+	{
+		/* initialize pm_power_off routine */
+		pm_power_off = twl_poweroff;
 	}
 
 	if (node) {
