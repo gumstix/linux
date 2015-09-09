@@ -1,0 +1,31 @@
+/*
+ * Copyright (C) 2015 Gumstix, Inc. - https://www.gumstix.com/
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+/*
+ * Arbor70C expansion board is manufactured by Gumstix Inc.
+ */
+
+/dts-v1/;
+
+#include "omap3-overo-storm.dtsi"
+#include "omap3-overo-arbor57c-common.dtsi"
+
+/ {
+	model = "OMAP36xx/AM37xx/DM37xx Gumstix Overo on Arbor70C";
+	compatible = "gumstix,omap3-overo-arbor70c", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
+};
+
+&omap3_pmx_core2 { 
+        led_pins2: pinmux_led_pins2 { 
+                pinctrl-single,pins = <
+                        OMAP3630_CORE2_IOPAD(0x25E4, PIN_OUTPUT | MUX_MODE4)    /* etx_d4.gpio_18 */
+                        OMAP3630_CORE2_IOPAD(0x25EE, PIN_OUTPUT | MUX_MODE4)    /* etx_d9.gpio_23 */
+                >;
+        };
+};
+
