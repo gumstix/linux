@@ -111,15 +111,15 @@
 		};
 
 		panel-timing {
-			clock-frequency = <9200000>;
-			hactive = <480>;
-			vactive = <272>;
-			hfront-porch = <8>;
-			hback-porch = <4>;
-			hsync-len = <41>;
-			vback-porch = <2>;
-			vfront-porch = <4>;
-			vsync-len = <10>;
+			clock-frequency = <30000000>;
+			hactive = <800>;
+			vactive = <480>;
+			hfront-porch = <40>;
+			hback-porch = <40>;
+			hsync-len = <48>;
+			vback-porch = <29>;
+			vfront-porch = <13>;
+			vsync-len = <3>;
 
 			hsync-active = <0>;
 			vsync-active = <0>;
@@ -146,34 +146,33 @@
 		default-on;
 	};
 };
-
-&mcspi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&mcspi1_pins>;
-
-	/* touch controller */
-	ads7846@0 {
-		pinctrl-names = "default";
-		pinctrl-0 = <&ads7846_pins>;
-
-		compatible = "ti,ads7846";
-		vcc-supply = <&ads7846reg>;
-
-		reg = <0>;				/* CS0 */
-		spi-max-frequency = <1500000>;
-
-		interrupt-parent = <&gpio4>;
-		interrupts = <18 0>;			/* gpio_114 */
-		pendown-gpio = <&gpio4 18 GPIO_ACTIVE_HIGH>;
-
-		ti,x-min = /bits/ 16 <0x0>;
-		ti,x-max = /bits/ 16 <0x0fff>;
-		ti,y-min = /bits/ 16 <0x0>;
-		ti,y-max = /bits/ 16 <0x0fff>;
-		ti,x-plate-ohms = /bits/ 16 <180>;
-		ti,pressure-max = /bits/ 16 <255>;
-
-		wakeup-source;
-	};
-};
+//&mcspi1 {
+//	pinctrl-names = "default";
+//	pinctrl-0 = <&mcspi1_pins>;
+//
+//	/* touch controller */
+//	ads7846@0 {
+//		pinctrl-names = "default";
+//		pinctrl-0 = <&ads7846_pins>;
+//
+//		compatible = "ti,ads7846";
+//		vcc-supply = <&ads7846reg>;
+//
+//		reg = <0>;				/* CS0 */
+//		spi-max-frequency = <1500000>;
+//
+//		interrupt-parent = <&gpio4>;
+//		interrupts = <18 0>;			/* gpio_114 */
+//		pendown-gpio = <&gpio4 18 0>;
+//
+//		ti,x-min = /bits/ 16 <0x0>;
+//		ti,x-max = /bits/ 16 <0x0fff>;
+//		ti,y-min = /bits/ 16 <0x0>;
+//		ti,y-max = /bits/ 16 <0x0fff>;
+//		ti,x-plate-ohms = /bits/ 16 <180>;
+//		ti,pressure-max = /bits/ 16 <255>;
+//
+//		linux,wakeup;
+//	};
+//};
 
