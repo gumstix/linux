@@ -111,6 +111,8 @@ struct edt_ft5x06_ts_data {
 
 	struct edt_reg_addr reg_addr;
 	enum edt_ver version;
+	int max_x;
+	int max_y;
 };
 
 static int edt_ft5x06_ts_readwrite(struct i2c_client *client,
@@ -941,6 +943,8 @@ static int edt_ft5x06_i2c_ts_probe_dt(struct device *dev,
 	tsdata->irq_pin = -EINVAL;
 	tsdata->reset_pin = of_get_named_gpio(np, "reset-gpios", 0);
 	tsdata->wake_pin = of_get_named_gpio(np, "wake-gpios", 0);
+	of_property_read_u32(np, "touchscreen-size-x", &tsdata->max_x);
+	of_property_read_u32(np, "touchscreen-size-y", &tsdata->max_y);
 
 	return 0;
 }
@@ -1036,12 +1040,12 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 	__set_bit(EV_KEY, input->evbit);
 	__set_bit(EV_ABS, input->evbit);
 	__set_bit(BTN_TOUCH, input->keybit);
-	input_set_abs_params(input, ABS_X, 0, tsdata->num_x * 64 - 1, 0, 0);
-	input_set_abs_params(input, ABS_Y, 0, tsdata->num_y * 64 - 1, 0, 0);
+	input_set_abs_params(input, ABS_X, 0, tsdata->max_x, 0, 0);
+	input_set_abs_params(input, ABS_Y, 0, tsdata->max_y, 0, 0);
 	input_set_abs_params(input, ABS_MT_POSITION_X,
-			     0, tsdata->num_x * 64 - 1, 0, 0);
+			     0, tsdata->max_x, 0, 0);
 	input_set_abs_params(input, ABS_MT_POSITION_Y,
-			     0, tsdata->num_y * 64 - 1, 0, 0);
+			     0, tsdata->max_y, 0, 0);
 	error = input_mt_init_slots(input, MAX_SUPPORT_POINTS, 0);
 	if (error) {
 		dev_err(&client->dev, "Unable to init MT slots.\n");
