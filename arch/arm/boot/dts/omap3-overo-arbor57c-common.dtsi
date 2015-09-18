@@ -28,8 +28,8 @@
 
         button_pins: pinmux_button_pins {
                 pinctrl-single,pins = <
-                        OMAP3_CORE1_IOPAD(0x21C8, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_simo.gpio_172 */
-                        OMAP3_CORE1_IOPAD(0x21CA, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_somi.gpio_173 */
+                        OMAP3_CORE1_IOPAD(0x21CA, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_simo.gpio_172 */
+                        OMAP3_CORE1_IOPAD(0x21CC, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_somi.gpio_173 */
                 >;
         };
 };

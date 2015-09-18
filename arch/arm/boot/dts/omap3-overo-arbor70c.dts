@@ -29,3 +29,7 @@
         };
 };
 
+&captouch {
+	reset-gpios = <&gpio1 31 GPIO_ACTIVE_LOW>;
+	wake-gpios = <0>; // invalidate previous assignment
+};
