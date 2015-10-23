@@ -20,13 +20,25 @@
 	compatible = "gumstix,omap3-overo-arbor70c", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
 };
 
-&omap3_pmx_core2 { 
-        led_pins2: pinmux_led_pins2 { 
-                pinctrl-single,pins = <
-                        OMAP3630_CORE2_IOPAD(0x25E4, PIN_OUTPUT | MUX_MODE4)    /* etx_d4.gpio_18 */
-                        OMAP3630_CORE2_IOPAD(0x25EE, PIN_OUTPUT | MUX_MODE4)    /* etx_d9.gpio_23 */
-                >;
-        };
+&omap3_pmx_core2 {
+	led_pins2: pinmux_led_pins2 {
+		pinctrl-single,pins = <
+			OMAP3630_CORE2_IOPAD(0x25EA, PIN_OUTPUT | MUX_MODE4)    /* etx_d7.gpio_21 */
+			OMAP3630_CORE2_IOPAD(0x25EC, PIN_OUTPUT | MUX_MODE4)    /* etx_d8.gpio_22 */
+		>;
+	};
+
+	button_pins2: pinmux_button_pins2 {
+		pinctrl-single,pins = <
+			OMAP3630_CORE2_IOPAD(0x25DC, PIN_INPUT | MUX_MODE4)    /* etx_d0.gpio_14 */
+		>;
+	};
+
+	accel_mag_pins2: pinmux_accel_mag_pins2 {
+		pinctrl-single,pins = <
+			OMAP3630_CORE2_IOPAD(0x25E4, PIN_OUTPUT | MUX_MODE4)    /* etx_d4.gpio_18 */
+		>;
+	};
 };
 
 &captouch {

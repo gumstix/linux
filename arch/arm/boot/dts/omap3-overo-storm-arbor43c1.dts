@@ -7,7 +7,8 @@
  */
 
 /*
- * Arbor50C expansion board is manufactured by Gumstix Inc.
+ * Arbor43C expansion board is manufactured by Gumstix Inc.
+ * This is for the 2nd revision of the board (v1)
  */
 
 /dts-v1/;
@@ -16,8 +17,13 @@
 #include "omap3-overo-arbor57c-common.dtsi"
 
 / {
-	model = "OMAP36xx/AM37xx/DM37xx Gumstix Overo on Arbor50C";
-	compatible = "gumstix,omap3-overo-arbor50c", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
+	model = "OMAP36xx/AM37xx/DM37xx Gumstix Overo on Arbor43C-v1";
+	compatible = "gumstix,omap3-overo-arbor43c1", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
+};
+
+&captouch {
+	touchscreen-size-x = <480>;
+	touchscreen-size-y = <272>;
 };
 
 &omap3_pmx_core2 {
@@ -28,15 +34,27 @@
 		>;
 	};
 
-	button_pins2: pinmux_button_pins2 {
+	button_pins2: pinmux_button_pins2 { 
 		pinctrl-single,pins = <
 			OMAP3630_CORE2_IOPAD(0x25DC, PIN_INPUT | MUX_MODE4)    /* etx_d0.gpio_14 */
 		>;
 	};
 
-	accel_mag_pins2: pinmux_accel_mag_pins2 {
+	accel_mag_pins2: pinmux_accel_mag_pins2 { 
 		pinctrl-single,pins = <
 			OMAP3630_CORE2_IOPAD(0x25E4, PIN_OUTPUT | MUX_MODE4)    /* etx_d4.gpio_18 */
 		>;
 	};
+};
+
+&lcd0_timing {
+	clock-frequency = <9200000>;
+	hactive = <480>;
+	vactive = <272>;
+	hfront-porch = <8>;
+	hback-porch = <4>;
+	hsync-len = <41>;
+	vback-porch = <2>;
+	vfront-porch = <4>;
+	vsync-len = <10>;
 };
