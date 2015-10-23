@@ -7,41 +7,14 @@
  */
 
 /*
- * The Arbor50C and Arbor70C expansion boards differ only by the supported
- * screen size and are manufactured by Gumstix Inc.
+ * The Arbor50C, Arbor70C and Arbor43C (v1) expansion boards differ only
+ * by the supported screen size and are manufactured by Gumstix Inc.
  */
 
 #include "omap3-overo-common-peripherals.dtsi"
 #include "omap3-overo-common-lcd43c.dtsi"
 
 #include <dt-bindings/input/input.h>
-
-&omap3_pmx_core {
-        led_pins: pinmux_led_pins {
-                pinctrl-single,pins = <
-                        OMAP3_CORE1_IOPAD(0x2138, PIN_OUTPUT | MUX_MODE4)	/* csi2_dx1.gpio_114 */
-                        OMAP3_CORE1_IOPAD(0x2180, PIN_OUTPUT | MUX_MODE4)	/* uart1_cts.gpio_150 */
-                        OMAP3_CORE1_IOPAD(0x219A, PIN_OUTPUT | MUX_MODE4)	/* uart3_cts_rctx.gpio_163 */
-                        OMAP3_CORE1_IOPAD(0x21E2, PIN_OUTPUT | MUX_MODE4)	/* sys_clkout2.gpio_186 */
-                >;
-        };
-
-        button_pins: pinmux_button_pins {
-                pinctrl-single,pins = <
-                        OMAP3_CORE1_IOPAD(0x21CA, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_simo.gpio_172 */
-                        OMAP3_CORE1_IOPAD(0x21CC, PIN_INPUT_PULLUP | MUX_MODE4)	/* mcspi1_somi.gpio_173 */
-                >;
-        };
-};
-
-&omap3_pmx_core2 {
-        led_pins2: pinmux_led_pins2 {
-                pinctrl-single,pins = <
-                        OMAP3630_CORE2_IOPAD(0x25E4, PIN_OUTPUT | MUX_MODE4)	/* etx_d4.gpio_18 */
-                        OMAP3630_CORE2_IOPAD(0x25EE, PIN_OUTPUT | MUX_MODE4)	/* etx_d9.gpio_23 */
-                >;
-        };
-};
 
 &captouch {
 	touchscreen-size-x = <800>;
@@ -52,83 +25,110 @@
 	leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
-		pinctrl-0 = <&led_pins &led_pins2>;
-		gpio18 {
-			label = "overo:yellow:gpio18";
-			gpios = <&gpio1 18 GPIO_ACTIVE_HIGH>;	/* gpio_18 */
+		pinctrl-0 = <&led_pins2>;
+		gpio21 {
+			label = "overo:red:gpio21";
+			gpios = <&gpio1 21 GPIO_ACTIVE_HIGH>;	/* gpio_21 */
 			linux,default-trigger = "heartbeat";
 		};
-		// shared with S1
-		gpio23 {
-			label = "overo:green:gpio23";
-			gpios = <&gpio1 23 GPIO_ACTIVE_HIGH>;	/* gpio_23 */
+		gpio22 {
+			label = "overo:blue:gpio22";
+			gpios = <&gpio1 22 GPIO_ACTIVE_HIGH>;	/* gpio_22 */
 			linux,default-trigger = "heartbeat";
 		};
-		// Error---this is an input-only GPIO
-		gpio114 {
-			label = "overo:blue:gpio114";
-			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;	/* gpio_114 */
-			linux,default-trigger = "heartbeat";
-		};
-		gpio150 {
-			label = "overo:blue:gpio150";
-			gpios = <&gpio5 22 GPIO_ACTIVE_HIGH>;	/* gpio_150 */
-			linux,default-trigger = "heartbeat";
-		};
-		gpio163 {
-			label = "overo:red:gpio163";
-			gpios = <&gpio6 3 GPIO_ACTIVE_HIGH>;	/* gpio_163 */
-			linux,default-trigger = "heartbeat";
-		};
-		// Wired to two LEDs
-		gpio186 {
-			label = "overo:green_yellow:gpio186";
-			gpios = <&gpio6 26 GPIO_ACTIVE_HIGH>;	/* gpio_186 */
-			linux,default-trigger = "heartbeat";
-		};
+
 	};
 
 	gpio_keys {
 		compatible = "gpio-keys";
 		pinctrl-names = "default";
-		pinctrl-0 = <&button_pins>;
+		pinctrl-0 = <&button_pins2>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-		// Shared with an LED on GPIO #23
-		//s1@23 {
-		//	label = "S1";
-		//	linux,code = <BTN_1>;
-		//	gpios = <&gpio1 23 GPIO_ACTIVE_LOW>;	/* gpio_23 */
-		//	gpio-key,wakeup;
-		//};
-		s4@173 {
-			label = "S4";
+		s1@14 {
+			label = "S1";
 			linux,code = <BTN_2>;
-			gpios = <&gpio6 13 GPIO_ACTIVE_LOW>;	/* gpio_173 */
-			gpio-key,wakeup;
-		};
-		s3@172 {
-			label = "S3";
-			linux,code = <BTN_1>;
-			gpios = <&gpio6 12 GPIO_ACTIVE_LOW>;	/* gpio_172 */
+			gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;	/* gpio_14 */
 			gpio-key,wakeup;
 		};
 	};
 };
 
-//#include "omap-gpmc-smsc9221.dtsi"
-//
-//&gpmc {
-//	ranges = <5 0 0x2c000000 0x1000000>;	/* CS5 */
-//
-//	ethernet@gpmc {
-//		reg = <5 0 0xff>;
-//		interrupt-parent = <&gpio6>;
-//		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;	/* GPIO 176 */
-//	};
-//};
+#include "omap-gpmc-smsc9221.dtsi"
+
+&gpmc {
+	ranges = <5 0 0x2c000000 0x1000000>;	/* CS5 */
+
+	ethernet@gpmc {
+		reg = <5 0 0xff>;
+		interrupt-parent = <&gpio6>;
+		interrupts = <16 IRQ_TYPE_LEVEL_LOW>;	/* GPIO 176 */
+	};
+};
 
 &lis33de {
 	status = "disabled";
 };
 
+&omap3_pmx_core2 {
+	mcspi1a_pins: pinmux_mcspi1a_pins {
+		pinctrl-single,pins = <
+			OMAP3_CORE1_IOPAD(0x21c8, PIN_INPUT | MUX_MODE0)        /* mcspi1_clk.mcspi1_clk */
+			OMAP3_CORE1_IOPAD(0x21ca, PIN_INPUT | MUX_MODE0)        /* mcspi1_simo.mcspi1_simo */
+			OMAP3_CORE1_IOPAD(0x21cc, PIN_INPUT | MUX_MODE0)        /* mcspi1_somi.mcspi1_somi */
+			OMAP3_CORE1_IOPAD(0x21ce, PIN_INPUT | MUX_MODE0)        /* mcspi1_cs0.mcspi1_cs0 */
+			OMAP3_CORE1_IOPAD(0x21d0, PIN_INPUT | MUX_MODE0)        /* mcspi1_cs1.mcspi1_cs1 */
+		>;
+	};
+
+	accel_mag_pins: pinmux_accel_mag_pins {
+		pinctrl-single,pins = <
+			OMAP3_CORE1_IOPAD(0x219a, PIN_INPUT | MUX_MODE4)        /* uart3_cts_rctx.gpio_163 */
+		>;
+	};
+
+	gyro_pins: pinmux_gyro_pins {
+		pinctrl-single,pins = <
+			OMAP3_CORE1_IOPAD(0x2138, PIN_INPUT | MUX_MODE4)        /* csi2_dx1.gpio_114 */
+		>;
+	};
+};
+
+&mcspi1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mcspi1a_pins>;
+
+	// TODO: we need SPI binding for the IMU components
+	/* LSM303D 3-axis Accel + 3-axis Mag */
+	accel_mag@0 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&accel_mag_pins &accel_mag_pins2>;
+
+		compatible = "st,lsm303d";
+		reg = <0>;
+		// INT/DRDY #1 is gpio_18
+		// INT/DRDY #2 is gpio_163
+	};
+
+	/* L3GD20H 3-axis Gyro */
+	gyro@1 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&gyro_pins>;
+
+		compatible = "st,l3dg20";
+		reg = <1>;
+		// INT/DRDY is gpio_114
+	};
+};
+
+&lcd0_timing {
+	clock-frequency = <30000000>;
+	hactive = <800>;
+	vactive = <480>;
+	hfront-porch = <40>;
+	hback-porch = <40>;
+	hsync-len = <48>;
+	vback-porch = <29>;
+	vfront-porch = <13>;
+	vsync-len = <3>;
+};
