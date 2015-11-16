@@ -48,18 +48,16 @@
 		clock-frequency = <19200000>;
 	};
 
-	/* regulator for w2cbw0015 on sdio5 */
-	w2cbw0015_vmmc: w2cbw0015_vmmc {
-		pinctrl-names = "default";
-		pinctrl-0 = <&w2cbw0015_pins>;
+	vbat: fixedregulator@0 {
 		compatible = "regulator-fixed";
-		regulator-name = "w2cbw0015";
-		regulator-min-microvolt = <3000000>;
-		regulator-max-microvolt = <3000000>;
-		gpio = <&gpio2 11 GPIO_ACTIVE_LOW>;		/* gpio_43 */
-		startup-delay-us = <70000>;
-		enable-active-high;
-		regulator-boot-on;
+	};
+
+	wlcore_wl_en: fixedregulator@1 {
+		compatible = "regulator-fixed";
+	};
+
+	wlcore_bt_en: fixedregulator@2 {
+		compatible = "regulator-fixed";
 	};
 };
 
@@ -159,6 +157,17 @@
 			OMAP4_IOPAD(0x14e, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat1 */
 			OMAP4_IOPAD(0x150, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat2 */
 			OMAP4_IOPAD(0x152, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat3 */
+			OMAP4_IOPAD(0x066, PIN_OUTPUT_PULLUP | MUX_MODE3)	/* gpio_43 */
+			OMAP4_IOPAD(0x06e, PIN_OUTPUT_PULLUP | MUX_MODE3)	/* gpio_47 */
+			OMAP4_IOPAD(0x072, PIN_INPUT | MUX_MODE3)			/* gpio_49 */
+		>;
+	};
+	uart2_pins: pinmux_uart2 {
+		pinctrl-single,pins = <
+			OMAP4_IOPAD(0x118, PIN_INPUT_PULLUP | MUX_MODE0)    /* uart2_cts.uart2_cts */
+			OMAP4_IOPAD(0x11a, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* uart2_rts.uart2_rts */
+			OMAP4_IOPAD(0x11c, PIN_INPUT_PULLUP | MUX_MODE0)    /* uart2_rx.uart2_rx */
+			OMAP4_IOPAD(0x11e, PIN_OUTPUT_PULLDOWN | MUX_MODE0) /* uart2_tx.uart2_tx */
 		>;
 	};
 };
@@ -192,7 +201,6 @@
 #include "twl6030.dtsi"
 #include "twl6030_omap4.dtsi"
 
-/* on-board bluetooth / WiFi module */
 &i2c4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c4_pins>;
@@ -232,14 +240,54 @@
 };
 
 /* on-board WiFi module */
+&vbat {
+	regulator-name = "vbat";
+	regulator-min-microvolt = <5000000>;
+	regulator-max-microvolt = <5000000>;
+};
+
+&wlcore_wl_en {
+        regulator-name = "regulator-wlcore-wl-en";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vbat>;
+        gpio = <&gpio2 11 0>;   /* gpio_43: WL Enable */
+        /* WLAN card specific delay */
+        startup-delay-us = <70000>;
+        enable-active-high;
+};
+
+&wlcore_bt_en {
+        regulator-name = "regulator-wlcore-bt-en";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vbat>;
+        gpio = <&gpio2 15 0>;	/* gpio_47: BT Enable */
+        startup-delay-us = <70000>;
+        enable-active-high;
+};
+
 &mmc5 {
+	/* Wifi & Bluetooth on MMC #5 */
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc5_pins>;
-
-	vmmc-supply = <&w2cbw0015_vmmc>;
 	ti,bus-width = <4>;
+	vmmc-supply = <&wlcore_wl_en>;
+	vmmc_aux-supply = <&wlcore_bt_en>;
 	ti,non-removable;
+	ti,needs-special-hs-handling;
 	cap-power-off-card;
+	keep-power-in-suspend;
+	ti,dual-volt;
+	max-frequency = <40000000>;
+};
+
+&uart2 {
+	/* Wilink8 Bluetooth */
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pins>;
 };
 
 &twl_usb_comparator {

@@ -301,6 +301,31 @@ static void __init var_som_om44_legacy_init(void)
 {
 	legacy_init_wl12xx(WL12XX_REFCLOCK_38, 0, 41);
 }
+
+struct ti_st_plat_data duovero_wilink_pdata = {
+        .nshutdown_gpio = 47,
+        .dev_name = "/dev/ttyO1",
+        .flow_cntrl = 1,
+        .baud_rate = 3000000,
+};
+
+static struct platform_device duovero_wl18xx_device = {
+        .name           = "kim",
+        .id             = -1,
+        .dev.platform_data = &duovero_wilink_pdata,
+};
+
+static struct platform_device duovero_btwilink_device = {
+        .name = "btwilink",
+        .id = -1,
+};
+
+static void __init omap4_duovero_legacy_init(void)
+{
+	platform_device_register(&duovero_btwilink_device);
+	platform_device_register(&duovero_wl18xx_device);
+	legacy_init_wl12xx(WL12XX_REFCLOCK_26, 0, 49);
+}
 #endif
 
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5)
@@ -448,6 +473,7 @@ static struct pdata_init pdata_quirks[] __initdata = {
 	{ "gumstix,omap3-overo", overo_legacy_init, },
 #endif
 #ifdef CONFIG_ARCH_OMAP4
+	{ "gumstix,omap4-duovero", omap4_duovero_legacy_init, },
 	{ "ti,omap4-sdp", omap4_sdp_legacy_init, },
 	{ "ti,omap4-panda", omap4_panda_legacy_init, },
 	{ "variscite,var-dvk-om44", var_som_om44_legacy_init, },
