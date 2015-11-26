@@ -28,6 +28,7 @@
 #include "drm_fb_helper.h"
 
 static LIST_HEAD(module_list);
+static bool slave_probing;
 
 void tilcdc_module_init(struct tilcdc_module *mod, const char *name,
 		const struct tilcdc_module_ops *funcs)
@@ -41,6 +42,11 @@ void tilcdc_module_init(struct tilcdc_module *mod, const char *name,
 void tilcdc_module_cleanup(struct tilcdc_module *mod)
 {
 	list_del(&mod->list);
+}
+
+void tilcdc_slave_probedefer(bool defered)
+{
+	slave_probing = defered;
 }
 
 static struct of_device_id tilcdc_of_match[];
@@ -649,12 +655,15 @@ static int tilcdc_pdev_probe(struct platform_device *pdev)
 {
 	struct component_match *match = NULL;
 	int ret;
-
 	/* bail out early if no DT data: */
 	if (!pdev->dev.of_node) {
 		dev_err(&pdev->dev, "device-tree data is missing\n");
 		return -ENXIO;
 	}
+
+	/* defer probing if slave is in deferred probing */
+	if (slave_probing == true)
+		return -EPROBE_DEFER;
 
 	ret = tilcdc_get_external_components(&pdev->dev, &match);
 	if (ret < 0)
