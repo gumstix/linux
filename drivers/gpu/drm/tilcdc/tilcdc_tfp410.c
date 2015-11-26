@@ -314,6 +314,8 @@ static int tfp410_probe(struct platform_device *pdev)
 	struct tilcdc_module *mod;
 	struct pinctrl *pinctrl;
 	uint32_t i2c_phandle;
+	struct i2c_adapter *tfp410_i2c;
+	int tfp410_gpio;
 	int ret = -EINVAL;
 
 	/* bail out early if no DT data: */
@@ -322,12 +324,52 @@ static int tfp410_probe(struct platform_device *pdev)
 		return -ENXIO;
 	}
 
+	if (of_property_read_u32(node, "i2c", &i2c_phandle)) {
+		dev_err(&pdev->dev, "could not get i2c bus phandle\n");
+		return ret;
+	}
+
+	i2c_node = of_find_node_by_phandle(i2c_phandle);
+	if (!i2c_node) {
+		dev_err(&pdev->dev, "could not get i2c bus node\n");
+		return ret;
+	}
+
+	tfp410_i2c = of_find_i2c_adapter_by_node(i2c_node);
+	of_node_put(i2c_node);
+
+	if (!tfp410_i2c) {
+		ret = -EPROBE_DEFER;
+		tilcdc_slave_probedefer(true);
+		dev_err(&pdev->dev, "could not get i2c\n");
+		return ret;
+	}
+
+	tfp410_gpio = of_get_named_gpio_flags(node, "powerdn-gpio",
+			0, NULL);
+	if (IS_ERR_VALUE(tfp410_gpio)) {
+		dev_warn(&pdev->dev, "No power down GPIO\n");
+	} else {
+		ret = gpio_request(tfp410_gpio, "DVI_PDn");
+		if (ret) {
+			dev_err(&pdev->dev, "could not get DVI_PDn gpio\n");
+			goto fail_adapter;
+		}
+	}
+
 	tfp410_mod = kzalloc(sizeof(*tfp410_mod), GFP_KERNEL);
-	if (!tfp410_mod)
-		return -ENOMEM;
+	if (!tfp410_mod) {
+		ret = -ENOMEM;
+		goto fail_adapter;
+	}
 
 	mod = &tfp410_mod->base;
 	pdev->dev.platform_data = mod;
+
+	mod->preferred_bpp = dvi_info.bpp;
+
+	tfp410_mod->i2c = tfp410_i2c;
+	tfp410_mod->gpio = tfp410_gpio;
 
 	tilcdc_module_init(mod, "tfp410", &tfp410_module_ops);
 
@@ -335,48 +377,12 @@ static int tfp410_probe(struct platform_device *pdev)
 	if (IS_ERR(pinctrl))
 		dev_warn(&pdev->dev, "pins are not configured\n");
 
-	if (of_property_read_u32(node, "i2c", &i2c_phandle)) {
-		dev_err(&pdev->dev, "could not get i2c bus phandle\n");
-		goto fail;
-	}
-
-	mod->preferred_bpp = dvi_info.bpp;
-
-	i2c_node = of_find_node_by_phandle(i2c_phandle);
-	if (!i2c_node) {
-		dev_err(&pdev->dev, "could not get i2c bus node\n");
-		goto fail;
-	}
-
-	tfp410_mod->i2c = of_find_i2c_adapter_by_node(i2c_node);
-	if (!tfp410_mod->i2c) {
-		dev_err(&pdev->dev, "could not get i2c\n");
-		of_node_put(i2c_node);
-		goto fail;
-	}
-
-	of_node_put(i2c_node);
-
-	tfp410_mod->gpio = of_get_named_gpio_flags(node, "powerdn-gpio",
-			0, NULL);
-	if (IS_ERR_VALUE(tfp410_mod->gpio)) {
-		dev_warn(&pdev->dev, "No power down GPIO\n");
-	} else {
-		ret = gpio_request(tfp410_mod->gpio, "DVI_PDn");
-		if (ret) {
-			dev_err(&pdev->dev, "could not get DVI_PDn gpio\n");
-			goto fail_adapter;
-		}
-	}
+	tilcdc_slave_probedefer(false);
 
 	return 0;
 
 fail_adapter:
-	i2c_put_adapter(tfp410_mod->i2c);
-
-fail:
-	kfree(tfp410_mod);
-	tilcdc_module_cleanup(mod);
+	i2c_put_adapter(tfp410_i2c);
 	return ret;
 }
 
