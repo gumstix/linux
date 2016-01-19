@@ -1064,6 +1064,9 @@ static const struct edt_i2c_chip_data edt_ft5506_data = {
 
 static const struct i2c_device_id edt_ft5x06_ts_id[] = {
 	{ .name = "edt-ft5x06", .driver_data = (long)&edt_ft5x06_data },
+	{ .name = "edt-ft5206", .driver_data = (long)&edt_ft5x06_data },
+	{ .name = "edt-ft5306", .driver_data = (long)&edt_ft5x06_data },
+	{ .name = "edt-ft5406", .driver_data = (long)&edt_ft5x06_data },
 	{ .name = "edt-ft5506", .driver_data = (long)&edt_ft5506_data },
 	{ /* sentinel */ }
 };
