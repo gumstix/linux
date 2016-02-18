@@ -253,7 +253,23 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c2_pins>;
+	gpios = <&gpio0 18 GPIO_ACTIVE_HIGH>;
 	clock-frequency = <400000>;
+
+/* Accelerometer/Magnetometer */
+	lsm303d: lsm303d@1e {
+		compatible = "lsm303d-custom";
+		int1-gpio = <&gpio5 12 GPIO_ACTIVE_HIGH>;
+		int2-gpio = <&gpio0 19 GPIO_ACTIVE_HIGH>;
+		reg = <0x1e>;
+	};
+
+/* Gyroscope */
+	l3gd20: l3gd20@6a {
+		compatible = "st,l3gd20-gyro";
+		st,drdy-int-pin = <2>;
+		reg = <0x6a>;
+	};
 
 /* Aptina MT9V032 Camera Sensor */
 	mt9v032: camera@5c {
@@ -484,6 +500,14 @@
 	status = "okay";
 };
 
+&gpio3 {
+	status = "okay";
+};
+
+&gpio4 {
+	status = "okay";
+};
+
 &gpio5 {
 	status = "okay";
 };
@@ -554,6 +578,8 @@
 		pinctrl-single,pins = <
 			0x178 (PIN_INPUT_PULLUP | SLEWCTRL_FAST | MUX_MODE3)  /* uart1_ctsn.i2c2_sda */
 			0x17c (PIN_INPUT_PULLUP | SLEWCTRL_FAST | MUX_MODE3)  /* uart1_rtsn.i2c2_scl */
+			/* Gyroscope DRDY */
+			0x1a0 (PIN_INPUT | MUX_MODE9)		/* mcasp0_aclkr.gpio0_18 */
 		>;
 	};
 
@@ -687,12 +713,6 @@
 			0x7c (PIN_OUTPUT_PULLUP | MUX_MODE7) /* gpmc_csn0.gpio1_29 */
 			/* WLAN IRQ */
 			0x94 (PIN_INPUT | MUX_MODE7 ) /* gpmc_oen_ren.gpio2_3 */
-		>;
-	};
-
-	accel_pins: pinmux_accel {
-		pinctrl-single,pins = <
-			0x74 (PIN_INPUT | MUX_MODE7) /* gpmc_wpn.gpio2_4 */
 		>;
 	};
 

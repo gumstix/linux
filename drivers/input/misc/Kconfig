@@ -796,4 +796,11 @@ config INPUT_DRV2667_HAPTICS
 	  To compile this driver as a module, choose M here: the
 	  module will be called drv2667-haptics.
 
+config INPUT_LSM303D
+	tristate "ST LSM303D acceleromter/magnetometer support"
+	depends on INPUT && I2C
+	help
+	  Say Y to enable support for the ST LSM303D accelerometer and
+	  magnetometer combo driver.
+
 endif
