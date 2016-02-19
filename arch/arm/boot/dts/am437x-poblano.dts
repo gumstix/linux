@@ -233,10 +233,10 @@
 		pinctrl-0 = <&edt_ft5306_ts_pins>;
 
 		reg = <0x38>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <12 0>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <4 0>;
 
-		wake-gpios = <&gpio5 13 GPIO_ACTIVE_HIGH>;
+		wake-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
 
 		touchscreen-size-x = <480>;
 		touchscreen-size-y = <272>;
@@ -615,8 +615,8 @@
 
 	edt_ft5306_ts_pins: edt_ft5306_ts_pins {
 		pinctrl-single,pins = <
-			0x248 (PIN_INPUT | MUX_MODE7)	/* gpio5_12.gpio5_12 */
-			0x24c (PIN_OUTPUT | MUX_MODE7)	/* gpio5_13.gpio5_13 */
+			0x098 (PIN_INPUT | MUX_MODE7)	/* gpmc_wen.gpio2_4 */
+			0x09c (PIN_OUTPUT | MUX_MODE7)	/* gpmc_be0n_cle.gpio2_5 */
 		>;
 	};
 
