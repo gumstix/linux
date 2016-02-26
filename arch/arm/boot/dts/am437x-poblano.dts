@@ -397,7 +397,7 @@
 };
 
 &qspi {
-	status = "okay";
+	status = "disabled";
 	pinctrl-names = "default";
 	pinctrl-0 = <&qspi_pins>;
 
@@ -695,7 +695,7 @@
 			0x1c (PIN_INPUT_PULLUP | MUX_MODE1) /* gpmc_ad7.mmc1_dat7 */
 			0x70 (PIN_INPUT_PULLUP | MUX_MODE4) /* gpmc_wait0.mmc1_sdcd */
 			/* EMMC nReset */
-			0x9c (PIN_OUTPUT_PULLUP | MUX_MODE7) /* gpmc_be0n_cle.gpio2_5 */
+			0x24c (PIN_OUTPUT_PULLUP | MUX_MODE7) /* gpio5_13.gpio5_13 */
 		>;
 	};
 
