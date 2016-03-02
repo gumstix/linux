@@ -64,7 +64,7 @@
 #define ST_GYRO_1_MULTIREAD_BIT			true
 
 /* CUSTOM VALUES FOR SENSOR 2 */
-#define ST_GYRO_2_WAI_EXP			0xd4
+#define ST_GYRO_2_WAI_EXP			0xd7
 #define ST_GYRO_2_ODR_ADDR			0x20
 #define ST_GYRO_2_ODR_MASK			0xc0
 #define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
