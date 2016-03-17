@@ -271,16 +271,17 @@
 		reg = <0x6a>;
 	};
 
-/* Aptina MT9V032 Camera Sensor */
-	mt9v032: camera@5c {
-		compatible = "aptina,mt9v032";
-		reg = <0x5c>;
-		clocks = <&refclk 0>;
-		clock-names = "cam_xclka";
+/* Omnivision OV7692 Camera Sensor */
+	ov7692: camera@3c {
+		compatible = "omnivision,ov7692";
+		reg = <0x3c>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&clkout1_pin>;
 
 		port {
-			mt9v032_ep: endpoint {
+			ov7692_ep: endpoint {
 				remote-endpoint = <&vpfe0_ep>;
+				mclk-frequency = <25000000>;
 				clk-pol = <0>;
 				link-frequencies = /bits/ 64 <13000000 26600000 27000000>;
 			};
@@ -469,14 +470,14 @@
 
 &vpfe0 {
 	status = "okay";
-	pinctrl-names = "default";
+	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&vpfe0_pins_default>;
+	pinctrl-1 = <&vpfe0_pins_sleep>;
 
 	port {
 		vpfe0_ep: endpoint {
-			remote-endpoint = <&mt9v032_ep>;
-			//ti,am437x-vpfe-interface = <0>;
-			if_type = <0>;
+			remote-endpoint = <&ov7692_ep>;
+			ti,am437x-vpfe-interface = <0>;
 			bus-width = <8>;
 			hsync-active = <0>;
 			vsync-active = <0>;
@@ -761,6 +762,30 @@
 			0x21C (PIN_INPUT_PULLUP | MUX_MODE0)  /* cam0_data5 */
 			0x220 (PIN_INPUT_PULLUP | MUX_MODE0)  /* cam0_data6 */
 			0x224 (PIN_INPUT_PULLUP | MUX_MODE0)  /* cam0_data7 */
+		>;
+	};
+
+	vpfe0_pins_sleep: vpfe0_pins_sleep {
+		pinctrl-single,pins = <
+			0x1B0 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_hd mode 0*/
+			0x1B4 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_vd mode 0*/
+			0x1C0 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_pclk mode 0*/
+			0x1C4 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data8 mode 0*/
+			0x1C8 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data9 mode 0*/
+			0x208 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data0 mode 0*/
+			0x20C (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data1 mode 0*/
+			0x210 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data2 mode 0*/
+			0x214 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data3 mode 0*/
+			0x218 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data4 mode 0*/
+			0x21C (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data5 mode 0*/
+			0x220 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data6 mode 0*/
+			0x224 (DS0_PULL_UP_DOWN_EN | INPUT_EN | MUX_MODE7)  /* cam0_data7 mode 0*/
+		>;
+	};
+
+	clkout1_pin: pinmux_clkout1_pin {
+		pinctrl-single,pins = <
+			0x270 (PIN_OUTPUT_PULLDOWN | MUX_MODE3) /* xdma_event_intr0.clkout1 */
 		>;
 	};
 };
