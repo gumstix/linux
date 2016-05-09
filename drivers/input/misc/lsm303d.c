@@ -59,6 +59,7 @@ Revision 1-0-5 2013/10/23
 #include <linux/of.h>
 #include <linux/of_gpio.h>
 #include <linux/of_graph.h>
+#include <linux/of_device.h>
 
 //#include <linux/input/lsm303d.h>
 #include "lsm303d.h"
@@ -3427,11 +3428,13 @@ static const struct i2c_device_id lsm303d_id[]
 
 MODULE_DEVICE_TABLE(i2c, lsm303d_id);
 
+#ifdef CONFIG_OF
 static const struct of_device_id lsm303d_of_match[] = {
-	{ .compatible = "lsm303d-custom" },
+	{ .compatible = "lsm303d" },
 	{ /* Sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, lsm303d_of_match);
+#endif
 
 static struct i2c_driver lsm303d_driver = {
 	.driver = {
@@ -3444,20 +3447,7 @@ static struct i2c_driver lsm303d_driver = {
 	.id_table = lsm303d_id,
 };
 
-static int __init lsm303d_init(void)
-{
-	pr_info("%s driver: init\n", LSM303D_DEV_NAME);
-	return i2c_add_driver(&lsm303d_driver);
-}
-
-static void __exit lsm303d_exit(void)
-{
-	pr_info("%s driver exit\n", LSM303D_DEV_NAME);
-	i2c_del_driver(&lsm303d_driver);
-}
-
-module_init(lsm303d_init);
-module_exit(lsm303d_exit);
+module_i2c_driver(lsm303d_driver);
 
 MODULE_DESCRIPTION("lsm303d accelerometer and magnetometer driver");
 MODULE_AUTHOR("Matteo Dameno, Denis Ciocca, STMicroelectronics");
