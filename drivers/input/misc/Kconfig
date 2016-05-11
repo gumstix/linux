@@ -726,4 +726,10 @@ config INPUT_LSM303D
 	  Say Y to enable support for the ST LSM303D accelerometer and
 	  magnetometer combo driver.
 
+config INPUT_L3GD20H
+	tristate "ST L3GD20H gyroscope support"
+	depends on INPUT && I2C
+	help
+	  Say Y to enable support for the ST L3GD20H gyroscope driver.
+
 endif
