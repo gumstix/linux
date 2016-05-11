@@ -265,9 +265,9 @@
 	};
 
 /* Gyroscope */
-	l3gd20: l3gd20@6a {
-		compatible = "st,l3gd20-gyro";
-		st,drdy-int-pin = <2>;
+	l3gd20h: l3gd20h@6a {
+		compatible = "l3gd20h_gyr";
+		int-gpio = <&gpio0 18 GPIO_ACTIVE_HIGH>;
 		reg = <0x6a>;
 	};
 
