@@ -943,6 +943,12 @@ static int edt_ft5x06_i2c_ts_probe_dt(struct device *dev,
 	tsdata->irq_pin = -EINVAL;
 	tsdata->reset_pin = of_get_named_gpio(np, "reset-gpios", 0);
 	tsdata->wake_pin = of_get_named_gpio(np, "wake-gpios", 0);
+
+	if(!gpio_is_valid(tsdata->reset_pin)) {
+		tsdata->reset_pin = tsdata->wake_pin;
+		tsdata->wake_pin = -EINVAL;
+	}
+
 	of_property_read_u32(np, "touchscreen-size-x", &tsdata->max_x);
 	of_property_read_u32(np, "touchscreen-size-y", &tsdata->max_y);
 
