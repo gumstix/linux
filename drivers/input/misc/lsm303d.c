@@ -3428,7 +3428,7 @@ static const struct i2c_device_id lsm303d_id[]
 MODULE_DEVICE_TABLE(i2c, lsm303d_id);
 
 static const struct of_device_id lsm303d_of_match[] = {
-	{ .compatible = "lsm303d-custom" },
+	{ .compatible = "lsm303d" },
 	{ /* Sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, lsm303d_of_match);
