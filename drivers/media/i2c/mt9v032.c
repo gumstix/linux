@@ -879,6 +879,13 @@ static const struct regmap_config mt9v032_regmap_config = {
  * Driver initialization and probing
  */
 
+static const s64 mt9v032_link_freqs[] = {
+	13000000,
+	26600000,
+	27000000,
+	0,
+};
+
 static struct mt9v032_platform_data *
 mt9v032_get_pdata(struct i2c_client *client)
 {
@@ -901,26 +908,9 @@ mt9v032_get_pdata(struct i2c_client *client)
 	if (!pdata)
 		goto done;
 
-	prop = of_find_property(np, "link-frequencies", NULL);
-	if (prop) {
-		u64 *link_freqs;
-		size_t size = prop->length / sizeof(*link_freqs);
-
-		link_freqs = devm_kcalloc(&client->dev, size,
-					  sizeof(*link_freqs), GFP_KERNEL);
-		if (!link_freqs)
-			goto done;
-
-		if (of_property_read_u64_array(np, "link-frequencies",
-					       link_freqs, size) < 0)
-			goto done;
-
-		pdata->link_freqs = link_freqs;
-		pdata->link_def_freq = link_freqs[0];
-	}
-
-	pdata->clk_pol = !!(endpoint.bus.parallel.flags &
-			    V4L2_MBUS_PCLK_SAMPLE_RISING);
+	pdata->clk_pol = 0;
+	pdata->link_freqs = mt9v032_link_freqs;
+	pdata->link_def_freq = 26600000;
 
 done:
 	of_node_put(np);

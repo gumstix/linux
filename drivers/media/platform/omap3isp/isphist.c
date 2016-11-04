@@ -26,7 +26,7 @@
 #include "ispreg.h"
 #include "isphist.h"
 
-#define HIST_CONFIG_DMA	1
+#define HIST_CONFIG_DMA	0
 
 /*
  * hist_reset_mem - clear Histogram memory before start stats engine.
