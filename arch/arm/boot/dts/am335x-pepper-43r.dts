@@ -9,6 +9,7 @@
 
 #include <dt-bindings/input/input.h>
 #include "am33xx.dtsi"
+#include <dt-bindings/interrupt-controller/irq.h>
 
 / {
 	model = "Gumstix Pepper 43R";
@@ -362,7 +363,7 @@
         regulator-min-microvolt = <3300000>;
         regulator-max-microvolt = <3300000>;
         vin-supply = <&vbat>;
-        gpio = <&gpio1 24 0>;   /* gpio1_24: WL Enable */
+        gpio = <&gpio1 24 GPIO_ACTIVE_HIGH>;   /* gpio1_24: WL Enable */
         /* WLAN card specific delay */
         startup-delay-us = <70000>;
         enable-active-high;
@@ -373,7 +374,7 @@
         regulator-min-microvolt = <3300000>;
         regulator-max-microvolt = <3300000>;
         vin-supply = <&vbat>;
-        gpio = <&gpio1 0 0>;           /* gpio1_0: BT Enable */
+        gpio = <&gpio1 0 GPIO_ACTIVE_HIGH>;           /* gpio1_0: BT Enable */
         startup-delay-us = <70000>;
         enable-active-high;
 };
@@ -395,6 +396,16 @@
 	cap-power-off-card;
 	keep-power-in-suspend;
 	ti,dual-volt;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	wlcore: wlcore@0 {
+		compatible = "ti,wl1831";
+		reg = <2>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+	};
 };
 
 
