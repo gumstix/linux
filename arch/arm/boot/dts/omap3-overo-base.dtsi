@@ -47,36 +47,16 @@
 		vcc-supply = <&hsusb2_power>;
 	};
 
-	/* Regulator to trigger the nPoweron signal of the Wifi module */
-	w3cbw003c_npoweron: regulator-w3cbw003c-npoweron {
+	vbat: fixedregulator@0 {
 		compatible = "regulator-fixed";
-		regulator-name = "regulator-w3cbw003c-npoweron";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio2 22 GPIO_ACTIVE_HIGH>;		/* gpio_54: nPoweron */
-		enable-active-high;
 	};
 
-	/* Regulator to trigger the nReset signal of the Wifi module */
-	w3cbw003c_wifi_nreset: regulator-w3cbw003c-wifi-nreset {
-		pinctrl-names = "default";
-		pinctrl-0 = <&w3cbw003c_pins &w3cbw003c_2_pins>;
+	wlcore_wl_en: fixedregulator@1 {
 		compatible = "regulator-fixed";
-		regulator-name = "regulator-w3cbw003c-wifi-nreset";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio1 16 GPIO_ACTIVE_HIGH>;		/* gpio_16: WiFi nReset */
-		startup-delay-us = <10000>;
 	};
 
-	/* Regulator to trigger the nReset signal of the Bluetooth module */
-	w3cbw003c_bt_nreset: regulator-w3cbw003c-bt-nreset {
+	wlcore_bt_en: fixedregulator@2 {
 		compatible = "regulator-fixed";
-		regulator-name = "regulator-w3cbw003c-bt-nreset";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;		/* gpio_164: BT nReset */
-		startup-delay-us = <10000>;
 	};
 };
 
@@ -121,6 +101,8 @@
 			OMAP3_CORE1_IOPAD(0x215e, PIN_INPUT_PULLUP |PIN_OFF_WAKEUPENABLE | MUX_MODE0)		/* sdmmc2_dat1.sdmmc2_dat1 */
 			OMAP3_CORE1_IOPAD(0x2160, PIN_INPUT_PULLUP | MUX_MODE0)		/* sdmmc2_dat2.sdmmc2_dat2 */
 			OMAP3_CORE1_IOPAD(0x2162, PIN_INPUT_PULLUP | MUX_MODE0)		/* sdmmc2_dat3.sdmmc2_dat3 */
+			OMAP3_CORE1_IOPAD(0x20bc, PIN_INPUT | MUX_MODE4)		/* gpmc_ncs7.gpio_58 */
+			OMAP3_CORE1_IOPAD(0x219c, PIN_OUTPUT | MUX_MODE4)		/* uart3_rts_sd.gpio_164 */
 		>;
 	};
 
@@ -128,7 +110,6 @@
 	w3cbw003c_pins: pinmux_w3cbw003c_pins {
 		pinctrl-single,pins = <
 			OMAP3_CORE1_IOPAD(0x20b4, PIN_OUTPUT | MUX_MODE4)		/* gpmc_ncs3.gpio_54 */
-			OMAP3_CORE1_IOPAD(0x219c, PIN_OUTPUT | MUX_MODE4)		/* uart3_rts_sd.gpio_164 */
 		>;
 	};
 
@@ -180,17 +161,47 @@
 	bus-width = <4>;
 };
 
+&vbat {
+	regulator-name = "vbat";
+	regulator-min-microvolt = <5000000>;
+	regulator-max-microvolt = <5000000>;
+};
+
+&wlcore_wl_en {
+        regulator-name = "regulator-wlcore-wl-en";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vbat>;
+        gpio = <&gpio1 16 GPIO_ACTIVE_HIGH>;   /* gpio_16: WL Enable */
+        /* WLAN card specific delay */
+        startup-delay-us = <70000>;
+        enable-active-high;
+};
+
+&wlcore_bt_en {
+        regulator-name = "regulator-wlcore-bt-en";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        vin-supply = <&vbat>;
+        gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;	/* gpio_164: BT Enable */
+        startup-delay-us = <70000>;
+        enable-active-high;
+};
+
 /* optional on board WiFi */
 &mmc2 {
+	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc2_pins>;
-	vmmc-supply = <&w3cbw003c_npoweron>;
-	vqmmc-supply = <&w3cbw003c_bt_nreset>;
-	vmmc_aux-supply = <&w3cbw003c_wifi_nreset>;
-	bus-width = <4>;
-	cap-sdio-irq;
-	interrupts-extended = <&intc 86>, <&gpio5 5 GPIO_ACTIVE_HIGH>; /* gpio_133 (mmc2.dat1) */
-	non-removable;
+	ti,bus-width = <4>;
+	vmmc-supply = <&wlcore_wl_en>;
+	vmmc_aux-supply = <&wlcore_bt_en>;
+	ti,non-removable;
+	ti,needs-special-hs-handling;
+	cap-power-off-card;
+	keep-power-in-suspend;
+	ti,dual-volt;
+	max-frequency = <40000000>;
 };
 
 &twl_gpio {
