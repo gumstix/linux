@@ -166,7 +166,7 @@
 		interrupt-parent = <&gpio4>;					/* gpio_113 */
 		interrupts = <17 0>;
 
-		wake-gpios = <&gpio4 31 GPIO_ACTIVE_HIGH>;		/* gpio_127 */
+		wake-gpios = <&gpio4 31 GPIO_ACTIVE_LOW>;		/* gpio_127 */
 
 		touchscreen-size-x = <800>;
 		touchscreen-size-y = <480>;

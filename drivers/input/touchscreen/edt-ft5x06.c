@@ -915,7 +915,7 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client,
 	if (tsdata->reset_gpio == NULL)
 	{
 		tsdata->reset_gpio = devm_gpiod_get_optional(&client->dev,
-						     "wake", GPIOD_OUT_LOW);
+						     "wake", GPIOD_OUT_HIGH);
 		tsdata->wake_gpio = NULL;
 	}
 	if (IS_ERR(tsdata->reset_gpio)) {

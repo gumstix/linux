@@ -236,7 +236,7 @@
 		interrupt-parent = <&gpio2>;
 		interrupts = <4 0>;
 
-		wake-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+		wake-gpios = <&gpio2 5 GPIO_ACTIVE_LOW>;
 
 		touchscreen-size-x = <480>;
 		touchscreen-size-y = <272>;
