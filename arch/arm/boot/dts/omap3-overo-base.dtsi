@@ -185,7 +185,6 @@
         vin-supply = <&vbat>;
         gpio = <&gpio6 4 GPIO_ACTIVE_HIGH>;	/* gpio_164: BT Enable */
         startup-delay-us = <70000>;
-        enable-active-high;
 };
 
 /* optional on board WiFi */
@@ -194,8 +193,9 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc2_pins>;
 	ti,bus-width = <4>;
-	vmmc-supply = <&wlcore_wl_en>;
-	vmmc_aux-supply = <&wlcore_bt_en>;
+	vmmc-supply = <&vmmc2>;
+	vmmc_aux-supply = <&wlcore_wl_en>;
+	vqmmc-supply = <&wlcore_bt_en>;
 	ti,non-removable;
 	ti,needs-special-hs-handling;
 	cap-power-off-card;
