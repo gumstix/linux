@@ -84,6 +84,7 @@
 	ds_rtc: ds1340@68 {
 		compatible = "dallas,ds1340";
 		reg = <0x68>;
+		trickle-resistor-ohms = <2000>;
 	};
 };
 
