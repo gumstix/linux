@@ -152,6 +152,7 @@ static struct chip_desc chips[last_ds_type] = {
 	},
 	[ds_1340] = {
 		.trickle_charger_reg = 0x08,
+		.do_trickle_setup = &do_trickle_setup_ds1339,
 	},
 	[ds_1388] = {
 		.trickle_charger_reg = 0x0a,
