@@ -973,6 +973,18 @@
 			status = "disabled";
 		};
 
+		am43xx_control_usb2phy1: control-phy@44e10620 {
+			compatible = "ti,control-phy-usb2-am437";
+			reg = <0x44e10620 0x4>;
+			reg-names = "power";
+		};
+
+		am43xx_control_usb2phy2: control-phy@0x44e10628 {
+			compatible = "ti,control-phy-usb2-am437";
+			reg = <0x44e10628 0x4>;
+			reg-names = "power";
+		};
+
 		ocp2scp0: ocp2scp@483a8000 {
 			compatible = "ti,am437x-ocp2scp", "ti,omap-ocp2scp";
 			#address-cells = <1>;

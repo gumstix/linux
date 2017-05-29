@@ -550,6 +550,9 @@ dtb-$(CONFIG_SOC_AM33XX) += \
 	am335x-lxm.dtb \
 	am335x-nano.dtb \
 	am335x-pepper.dtb \
+	am335x-pepper-43c.dtb \
+	am335x-pepper-43r.dtb \
+	am335x-pepper-dvi.dtb \
 	am335x-shc.dtb \
 	am335x-sbc-t335.dtb \
 	am335x-sl50.dtb \
@@ -557,6 +560,7 @@ dtb-$(CONFIG_SOC_AM33XX) += \
 dtb-$(CONFIG_ARCH_OMAP4) += \
 	omap4-duovero-parlor.dtb \
 	omap4-kc1.dtb \
+	omap4-duovero-garret50c.dtb \
 	omap4-panda.dtb \
 	omap4-panda-a4.dtb \
 	omap4-panda-es.dtb \
@@ -570,7 +574,8 @@ dtb-$(CONFIG_SOC_AM43XX) += \
 	am437x-gp-evm.dtb \
 	am437x-idk-evm.dtb \
 	am437x-sbc-t43.dtb \
-	am437x-sk-evm.dtb
+	am437x-sk-evm.dtb \
+	am437x-poblano.dtb
 dtb-$(CONFIG_SOC_OMAP5) += \
 	omap5-cm-t54.dtb \
 	omap5-igep0050.dtb \
