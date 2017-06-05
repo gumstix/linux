@@ -819,4 +819,17 @@ config INPUT_HISI_POWERKEY
 	  To compile this driver as a module, choose M here: the
 	  module will be called hisi_powerkey.
 
+config INPUT_LSM303D
+	tristate "ST LSM303D acceleromter/magnetometer support"
+	depends on INPUT && I2C
+	help
+	  Say Y to enable support for the ST LSM303D accelerometer and
+	  magnetometer combo driver.
+
+config INPUT_L3GD20H
+	tristate "ST L3GD20H gyroscope support"
+	depends on INPUT && I2C
+	help
+	  Say Y to enable support for the ST L3GD20H gyroscope driver.
+
 endif
