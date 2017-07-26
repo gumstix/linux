@@ -1,7 +1,8 @@
 /* OV7692: linux kernel driver for the OmniVision OV7692 Image Sensor 
 *
-*  Copyright (C) 2016, 
+*  Copyright (C) 2016-2017, 
 *
+*  Jason Liu <jason.liu@gumstix.com>
 *  Arun Bharadwaj <arun@gumstix.com>
 *  Adam YH Lee <adam@gumstix.com> 
 *  
@@ -24,6 +25,7 @@
 *  along with OV7692. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <linux/utsname.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -40,10 +42,19 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-event.h>
+
+#include "../platform/omap3isp/omap3isp.h"
+#include "../platform/omap3isp/isp.h"
+
 #include <media/i2c/ov7692.h>
+MODULE_DESCRIPTION("OmniVision OV7692 sensor experimental driver");
+MODULE_LICENSE("GPL v2");
 
 #define REG_OV7692_MODEL_ID_MSB	0x0A
 #define REG_OV7692_MODEL_ID_LSB	0x0B
+#define MEDIA_ENT_T_V4L2_SUBDEV_SENSOR	MEDIA_ENT_F_CAM_SENSOR
+#define MEDIA_ENT_F_CAM_SENSOR		(MEDIA_ENT_F_OLD_SUBDEV_BASE + 1)
+#define MEDIA_ENT_F_OLD_SUBDEV_BASE	0x00020000
 
 struct ov7692_ctrls {
 	struct v4l2_ctrl_handler handler;
@@ -78,7 +89,7 @@ struct ov7692 {
 };
 
 static const u8 reset_registers[] = {
-   	0x12, 0x80, // Reset
+       	0x12, 0x80, // Reset
 	0xEE, 0x00,
 };
 
@@ -219,15 +230,18 @@ static int write_regs_i2c(struct i2c_client *client, const u8 *regs)
 
 	u8 buf[2];
 
-	v4l_info(client, "Writing into i2c\n");
+	v4l_info(client, "Writing into i2c..!\n");
 	for (i = 0; regs[i] != 0xEE; i += 2) {
 		buf[0] = regs[i];
 		buf[1] = regs[i+1];
 
 		ret = i2c_master_send(client, buf, 2);
-		if (ret < 0)
+		if (ret < 0) {
 			v4l_err(client, "i2c send failed!\n");
+			return ret;
+		}
 	}
+	v4l_info(client, "Done writing into i2c..!\n");
 
 	return 0;	
 }
@@ -295,7 +309,7 @@ static int ov7692_enum_frame_sizes(struct v4l2_subdev *sd,
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 
-	v4l2_info(client, "Setting frame sizes\n");
+	v4l2_info(client, "Setting frame sizes... \n");
 
 	fse->code = MEDIA_BUS_FMT_SBGGR8_1X8;
 	fse->min_width = 640;
@@ -591,21 +605,61 @@ static int ov7692_probe(struct i2c_client *client,
 	struct ov7692 *ov7692;
 	struct i2c_adapter *adapter = client->adapter;
 	struct v4l2_subdev *sd;
+	struct clk *clk;
+	struct new_utsname *board_info;
 	int ret;
 	unsigned int i;
 	u8 model_id_msb;
 	u8 model_id_lsb;
-	u16 model_id;	
+	u16 model_id;
 
 	v4l_info(client, "Probing driver\n");
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA)) {
-		v4l_info(client, "i2c_check_functionality failed\n");
+			v4l_info(client, "i2c_check_functionality failed\n");
+			return -ENODEV;
+	}
+
+	/* Detecting the board is overo or poblano */
+	board_info = init_utsname();
+	if (board_info == NULL){
+		v4l_info(client, "Probe failed, cannot find board's information\n");
 		return -ENODEV;
+	}
+	/* caution */
+	/* board_info->nodename != "poblano" will always be true */
+	if(board_info->nodename[0] != 'p')
+	{
+		usleep_range(1000000, 12000000);
+
+		clk = devm_clk_get(&client->dev, NULL);
+		if (IS_ERR(clk))
+			return -EPROBE_DEFER;
+
+		v4l_info(client, "clock being set at %lld\n", pdata->link_def_freq);
+		ret = clk_set_rate(clk, pdata->link_def_freq);
+		if (ret < 0)
+		{
+			v4l_err(client, "clk_set_rate failed\n");
+			return ret;
+		}
+
+		ret = clk_prepare_enable(clk);
+
+		if (ret < 0)
+		{
+			v4l_err(client, "clk_enable failed\n");
+			return ret;
+		}
+
+		udelay(1);
 	}
 
 	ov7692 = devm_kzalloc(&client->dev, sizeof(*ov7692), GFP_KERNEL);
+	if (ov7692 == NULL){
+		v4l_info(client, "Memory init failed\n");
+		return -ENOMEM;
+	}
 	sd = &ov7692->sd;
-
 	ov7692->pdata = pdata;
 
 	if (sd == NULL){
@@ -614,12 +668,12 @@ static int ov7692_probe(struct i2c_client *client,
 	}
 
 	v4l2_i2c_subdev_init(sd, client, &ov7692_ops);
-	strlcpy(sd->name, "ov7692", sizeof(sd->name));
+	strlcpy(sd->name, "OV7692", sizeof(sd->name));
 
 	sd->internal_ops = &ov7692_sd_internal_ops;
 
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
-	
+
 	client->flags = I2C_CLIENT_SCCB;
 
 	v4l_info(client, "chip found @ 0x%02x (%s)\n",
@@ -634,18 +688,28 @@ static int ov7692_probe(struct i2c_client *client,
 	v4l_info(client, "Model ID: 0x%x, 0x%x, 0x%x\n", model_id, model_id_msb, model_id_lsb);
 
 	ov7692->pad.flags = MEDIA_PAD_FL_SOURCE;
-	//sd->entity.function = MEDIA_ENT_T_V4L2_SUBDEV_SENSOR;
+	if (board_info->nodename[0] != 'p')
+		sd->entity.function = MEDIA_ENT_T_V4L2_SUBDEV_SENSOR;
 
-	ret = media_entity_pads_init(&sd->entity, 1, &ov7692->pad); 
+	/*	i2c device check	*/
+	ret = write_regs_i2c(client, reset_registers);
+	if (ret < 0)
+	{
+		v4l_err(client, "Probe failed, cannot find the device\n");
+		devm_kfree(&client->dev, (void *)ov7692);
+		return ret;
+	}
+
+	ret = media_entity_pads_init(&sd->entity, 1, &ov7692->pad);
 	if (ret < 0){
 		v4l_err(client, "media entity init failed\n");
-		return ret;
+		goto err1;
 	}	
 
 	ret = ov7692_initialize_controls(ov7692);
 	if (ret < 0){
 		v4l_err(client, "controls init failed\n");
-		return ret;
+		goto err1;
 	}
 
 	if (pdata && pdata->link_freqs) {
@@ -663,23 +727,37 @@ static int ov7692_probe(struct i2c_client *client,
 		v4l2_ctrl_cluster(2, &ov7692->link_freq);
 	}
 
-	ov7692_get_default_format(&ov7692->format);
+	if(board_info->nodename[0] == 'p')
+		ov7692_get_default_format(&ov7692->format);
 	ret = v4l2_async_register_subdev(sd);
 	if (ret < 0){
 		v4l_err(client, "Sub-device registration failed\n");
-		return ret;
+		goto err2;
 	}
-
 	v4l_info(client, "Probe successful\n");
+
 	return 0;
+
+err2:
+	v4l2_ctrl_handler_free(&ov7692->ctrls.handler);
+err1:
+	media_entity_cleanup(&sd->entity);
+	devm_kfree(&client->dev, (void *)ov7692);
+	return ret;
 }
 
 static int ov7692_remove(struct i2c_client *client)
 {
-	struct v4l2_subdev *sd = i2c_get_clientdata(client);
-
-	v4l2_device_unregister_subdev(sd);
-
+	if (client != NULL) {
+		struct v4l2_subdev *sd = i2c_get_clientdata(client);
+		if (sd != NULL) {
+			struct ov7692 *ov7692 = to_ov7692(sd);
+			if (ov7692 != NULL)
+				v4l2_ctrl_handler_free(&ov7692->ctrls.handler);
+			v4l2_device_unregister_subdev(sd);			
+			media_entity_cleanup(&sd->entity);
+		}	
+	}
 	return 0;
 }
 
@@ -706,7 +784,3 @@ static struct i2c_driver ov7692_driver = {
 	.id_table = ov7692_id,
 };
 module_i2c_driver(ov7692_driver);
-
-MODULE_AUTHOR("Arun Bharadwaj <arun@gumstix.com>");
-MODULE_DESCRIPTION("OmniVision OV7692 sensor experimental driver");
-MODULE_LICENSE("GPL v2");
