@@ -458,9 +458,11 @@ dtb-$(CONFIG_ARCH_OMAP3) += \
 	omap3-overo-storm-palo35.dtb \
 	omap3-overo-storm-palo43.dtb \
 	omap3-overo-storm-summit.dtb \
+	omap3-overo-storm-thumbo.dtb \
 	omap3-overo-storm-tobi.dtb \
 	omap3-overo-storm-tobiduo.dtb \
 	omap3-overo-summit.dtb \
+	omap3-overo-thumbo.dtb \
 	omap3-overo-tobi.dtb \
 	omap3-overo-tobiduo.dtb \
 	omap3-pandora-600mhz.dtb \
