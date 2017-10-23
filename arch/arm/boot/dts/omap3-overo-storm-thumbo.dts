@@ -1,0 +1,29 @@
+/*
+ * Thumbo expansion board is manufactured by Gumstix Inc.
+ */
+
+/dts-v1/;
+
+#include "omap3-overo-storm.dtsi"
+#include "omap3-overo-common-peripherals.dtsi"
+
+/ {
+	leds {
+		compatible = "gpio-leds";
+		red {
+			label = "overo:red:gpio21";
+			gpios = <&gpio1 21 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "heartbeat";
+		};
+        blue {
+        	label = "overo:blue:gpio22";
+			gpios = <&gpio1 22 GPIO_ACTIVE_LOW>;
+			linux,default-trigger = "mmc0";
+        };
+	};
+};
+
+/ {
+	model = "OMAP36xx/AM37xx/DM37xx Gumstix Overo Storm on Thumbo";
+	compatible = "gumstix,omap3-overo-thumbo", "gumstix,omap3-overo", "ti,omap36xx", "ti,omap3";
+};
