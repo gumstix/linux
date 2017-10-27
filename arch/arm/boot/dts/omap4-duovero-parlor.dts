@@ -184,6 +184,7 @@
 
 	port {
 		hdmi_out: endpoint {
+			lanes = <1 0 3 2 5 4 7 6>;
 			remote-endpoint = <&hdmi_connector_in>;
 		};
 	};
